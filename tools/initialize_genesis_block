@@ -10,7 +10,7 @@ then
     echo "Creating new genesis block from $genesis_fn:"
     geth --datadir $datadir init $genesis_fn
     echo "Creating new account:"
-    geth account new
+    geth --datadir $datadir account new
     rm -rf $outdir
     mkdir $outdir
 fi
