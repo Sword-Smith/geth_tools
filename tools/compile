@@ -18,6 +18,7 @@ then
     ipcpath="$HOME/Library/Ethereum/geth.ipc"
 else
     echo "The system system platform is not Linux or Darwin, we only support one of these"
+    exit 1
 fi
 
 # Check that source code file and password are provided
