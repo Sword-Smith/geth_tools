@@ -1,0 +1,9 @@
+#!/bin/bash
+genesis_fn="./testserver_genesis.json"
+echo "Are you sure you wish to delete any existing block chain data? Y/N"
+read delete
+if [ "$delete" == "Y" ]
+then
+    echo "Creating new genesis block from $genesis_fn"
+    geth --datadir .ethereum_testserver_data/ init $genesis_fn
+fi
