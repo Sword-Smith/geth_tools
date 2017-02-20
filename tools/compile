@@ -4,8 +4,9 @@ gen_js_dir="auto_generated_js"
 datadir=".ethereum_testserver_data"
 constructor_args_script="get_constructor_args.py"
 save_contract_info_to_json="save_json_of_results.py"
-requried_arguments_offset=2
+requried_arguments_offset=1
 tool_dir="tools"
+password_fn="$tool_dir/password.txt"
 
 system_platform=$(uname)
 # IPC path is a hardcoded value in Ethereum Wallet GUI, cf.
@@ -25,7 +26,7 @@ fi
 
 if [ $# -lt $requried_arguments_offset ]
 then
-    echo "Usage: compile <source file> <password> [arg0 of constructor] [arg1 of constructor] ..."
+    echo "Usage: compile <source file> [arg0 of constructor] [arg1 of constructor] ..."
     exit 1
 fi
 
@@ -36,7 +37,7 @@ then
     exit 1
 fi
 
-password=$2
+password=$(cat $password_fn)
 bn=$(basename $1 .sol)
 
 # Check that the first letter of the file name is a capitalized letter

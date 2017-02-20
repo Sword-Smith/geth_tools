@@ -2,15 +2,25 @@
 genesis_fn="./testserver_genesis.json"
 datadir=".ethereum_testserver_data/"
 outdir="out/"
+if [ "$#" -eq 1 -a $1 == "--force" ] || [ "$#" -eq 1 -a $1 == "-f" ]
+then
+    rm -r $datadir
+    geth --datadir $datadir init $genesis_fn
+    geth --datadir $datadir --password tools/password.txt account new
+    rm -rf $outdir
+    mkdir $outdir
+    exit 0
+fi
+
 echo "Are you sure you wish to delete any existing block chain data and *ALL PRIVATE KEYS*? Y/N"
 read delete
-if [ "$delete" == "Y" ]
+if [ "$delete" == "Y" || $1 -eq "-f" ]
 then
     rm -r $datadir
     echo "Creating new genesis block from $genesis_fn:"
     geth --datadir $datadir init $genesis_fn
     echo "Creating new account:"
-    geth --datadir $datadir account new
+    geth --datadir $datadir --password tools/password.txt account new
     rm -rf $outdir
     mkdir $outdir
 fi
