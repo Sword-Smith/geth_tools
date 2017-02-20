@@ -1,9 +1,16 @@
 #!/bin/bash
 genesis_fn="./testserver_genesis.json"
-echo "Are you sure you wish to delete any existing block chain data? Y/N"
+datadir=".ethereum_testserver_data/"
+outdir="out/"
+echo "Are you sure you wish to delete any existing block chain data and *ALL PRIVATE KEYS*? Y/N"
 read delete
 if [ "$delete" == "Y" ]
 then
-    echo "Creating new genesis block from $genesis_fn"
-    geth --datadir .ethereum_testserver_data/ init $genesis_fn
+    rm -r $datadir
+    echo "Creating new genesis block from $genesis_fn:"
+    geth --datadir $datadir init $genesis_fn
+    echo "Creating new account:"
+    geth account new
+    rm -rf $outdir
+    mkdir $outdir
 fi
