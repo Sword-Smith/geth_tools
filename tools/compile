@@ -95,7 +95,8 @@ fi
 filter_out_id="Javascript message:"
 js_code="var contractObject = web3.eth.contract($abi_source); "
 js_code+="var gas = web3.eth.estimateGas({data: '$bin' })*5; " # This is the ultimate hack, but we don't know the price it should be.
-js_code+="var submittedContract = contractObject.new($constructor_args {from:web3.eth.accounts[0], data:'$bin', gas: gas}, function(e, contract){
+js_code+=$(cat <<EOF
+var submittedContract = contractObject.new($constructor_args {from:web3.eth.accounts[0], data:'$bin', gas: gas}, function(e, contract){
     if(!e){
         if (!contract.address){
             console.log('$filter_out_id Contract transaction sent: TransactionHash: ' + contract.transactionHash + ' waiting to be mined ...');
@@ -116,7 +117,8 @@ if (rcpt.contractAddress && web3.eth.getCode(rcpt.contractAddress) != '0x'){
 } else {
     console.log('Contract address not found. Something went wrong. Perhaps too little gas.')
 }
-"
+EOF
+        )
 js_fn="$outdir/$gen_js_dir/javascript_$bn"
 echo $js_code > $js_fn
 
