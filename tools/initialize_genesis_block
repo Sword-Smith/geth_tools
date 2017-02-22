@@ -2,7 +2,7 @@
 genesis_fn="./testserver_genesis.json"
 datadir=".ethereum_testserver_data/"
 outdir="out/"
-if [ "$#" -eq 1 -a $1 == "--force" ] || [ "$#" -eq 1 -a $1 == "-f" ]
+if [[ "$#" -eq 1 && $1 == "--force" || "$#" -eq 1 && $1 == "-f" ]]
 then
     rm -r $datadir
     geth --datadir $datadir init $genesis_fn
@@ -14,7 +14,7 @@ fi
 
 echo "Are you sure you wish to delete any existing block chain data and *ALL PRIVATE KEYS*? Y/N"
 read delete
-if [ "$delete" == "Y" || $1 -eq "-f" ]
+if [ "$delete" == "Y" ] || $1 -eq "-f" ]
 then
     rm -r $datadir
     echo "Creating new genesis block from $genesis_fn:"
