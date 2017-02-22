@@ -3,10 +3,17 @@
 gen_js_dir="auto_generated_js"
 datadir=".ethereum_testserver_data"
 constructor_args_script="get_constructor_args.py"
-save_contract_info_to_json="save_json_of_results.py"
+save_json_of_results="save_json_of_results.py"
 requried_arguments_offset=1
 tool_dir="tools"
 password_fn="$tool_dir/password.txt"
+
+# If env. var undef, store to "out", otherwise "t/out".
+outdir="out/"
+if [ "$GETH_TEST" == "TEST" ]
+then
+    outdir="t/$outdir"
+fi
 
 system_platform=$(uname)
 # IPC path is a hardcoded value in Ethereum Wallet GUI, cf.
@@ -48,16 +55,16 @@ then
     exit 1
 fi
 
-mkdir -p out
-mkdir -p "out/$gen_js_dir"
+mkdir -p $outdir
+mkdir -p "$outdir/$gen_js_dir"
 cd $(dirname $1)
-solc -o ../../out --abi --bin $(basename $1) # Compiles Solidity to EVM
+solc -o ../../$outdir --abi --bin $(basename $1) # Compiles Solidity to EVM
 cd ../../
 
 # Find filenames
-abi_def_fn="out/$bn.sol:$bn.abi"
+abi_def_fn="$outdir/$bn.sol:$bn.abi"
 abi_source="$(cat $abi_def_fn)"
-bin_fn="out/$bn.bin"
+bin_fn="$outdir/$bn.bin"
 bin="0x$(cat $bin_fn)"
 
 # Count provided arguments
@@ -110,12 +117,12 @@ if (rcpt.contractAddress && web3.eth.getCode(rcpt.contractAddress) != '0x'){
     console.log('Contract address not found. Something went wrong. Perhaps too little gas.')
 }
 "
-js_fn="out/$gen_js_dir/javascript_$bn"
+js_fn="$outdir/$gen_js_dir/javascript_$bn"
 echo $js_code > $js_fn
 
 # Run javascript and store contract address
-address_fn="out/$bn.address"
+address_fn="$outdir/$bn.address"
 address=$(geth --exec "personal.unlockAccount(web3.eth.accounts[0], '$password'); loadScript('$js_fn');" attach $ipcpath | tee /dev/stderr | grep -v true | grep -v "$filter_out_id")
 
 # The results of constructor args and address will be written to the file out/contract.txt
-python "$tool_dir/$save_contract_info_to_json" $bn $constructor_args $address
+python "$tool_dir/$save_json_of_results" $outdir $bn $constructor_args $address
