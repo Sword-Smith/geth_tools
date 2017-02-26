@@ -2,8 +2,13 @@
  # -*- coding: utf-8 -*-
 import json
 import sys
+import os
 
 requried_arguments_offset = 3
+
+def touch(fname, times=None):
+    with open(fname, 'a'):
+        os.utime(fname, times)
 
 def is_num(test):
     try:
@@ -42,6 +47,14 @@ with open( sys.argv[1] + sys.argv[2] + ".sol:" + sys.argv[2] + ".abi") as data_f
 
     final_dict = {"name": sys.argv[2], "args": arg_list, "address" : sys.argv[i]}
 
-with open(sys.argv[1] + "contracts.txt", "a") as data_out_file:
-    json.dump(final_dict, data_out_file)
-    data_out_file.write("\n")
+fn=sys.argv[1] + "contracts.json"
+old_data=[]
+touch(fn)
+if (os.stat(fn).st_size):
+    with open(fn) as data_out_file:
+        old_data = json.load(data_out_file)
+
+old_data.append(final_dict)
+
+with open(fn, "w") as fh:
+    json.dump(old_data, fh)
