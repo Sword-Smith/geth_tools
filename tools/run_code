@@ -1,0 +1,45 @@
+#!/bin/bash
+# This bash script runs the code present in the loadscript
+# $1 is name of deployed contract.
+# $2 is path to JS containing code to be executed
+
+tool_dir="tools"
+password_fn="$tool_dir/password.txt"
+password=$(cat $password_fn)
+
+outdir="out/"
+if [ "$GETH_TEST" == "TEST" ]
+then
+    outdir="t/$outdir"
+fi
+
+system_platform=$(uname)
+if [[ $system_platform == "Linux" ]]
+then
+    ipcpath="$HOME/.ethereum/geth.ipc"
+elif [[ $system_platform == "Darwin" ]]
+then
+    ipcpath="$HOME/Library/Ethereum/geth.ipc"
+else
+    echo "The system system platform is not Linux or Darwin, we only support one of these"
+    exit 1
+fi
+
+contract_name=$1
+# Given a name, I would like the address on one line, and the ABI def. on another
+# DEVFIX: Can we check the return value of this Python script?
+deployed_contracts=$(python tools/interpret_contracts_json.py $outdir $contract_name)
+address=$(echo "$deployed_contracts" | grep "address:" | awk '{print $2}')
+abi_def=$(echo "$deployed_contracts" | grep "ABI_DEF:" | awk '{print $2}')
+
+dec_var_code=$(cat <<EOF
+var $contract_name=web3.eth.contract($abi_def).at('$address');
+EOF
+            )
+echo "$dec_var_code"
+mkdir -p "$outdir/$gen_js_dir/"
+dec_var_fn="$outdir/$gen_js_dir/dec_var.js"
+echo $dec_var_code > $dec_var_fn
+
+run_commands_fn=$2
+geth --exec "personal.unlockAccount(web3.eth.accounts[0], '$password'); loadScript('$dec_var_fn'); loadScript('$run_commands_fn')" attach $ipcpath
