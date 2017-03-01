@@ -96,8 +96,6 @@ then
     done
 fi
 
-echo $constructor_args
-exit 1
 
 # Define javascript to invoke constructor
 filter_out_id="Javascript message:"
