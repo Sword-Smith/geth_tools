@@ -4,6 +4,7 @@ gen_js_dir="auto_generated_js"
 datadir=".ethereum_testserver_data"
 constructor_args_script="get_constructor_args.py"
 save_json_of_results="save_json_of_results.py"
+find_any_address_constructor_args="find_any_address_constructor_args.py"
 requried_arguments_offset=1
 tool_dir="tools"
 password_fn="$tool_dir/password.txt"
@@ -87,9 +88,16 @@ then
     # Iterate over constructor arguments.
     for i in $(seq $(expr $requried_arguments_offset + 1) $amount_of_args)
     do
-        constructor_args+="${!i}, "
+        if [[ "${!i}" =~ ^_address_.* ]]; then
+            constructor_args+="$(python "$tool_dir/$find_any_address_constructor_args" $outdir ${!i}), "
+        else
+            constructor_args+="${!i}, "
+        fi
     done
 fi
+
+echo $constructor_args
+exit 1
 
 # Define javascript to invoke constructor
 filter_out_id="Javascript message:"
