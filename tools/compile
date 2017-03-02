@@ -89,7 +89,7 @@ then
     for i in $(seq $(expr $requried_arguments_offset + 1) $amount_of_args)
     do
         if [[ "${!i}" =~ ^_address_.* ]]; then
-            constructor_args+="$(python "$tool_dir/$find_any_address_constructor_args" $outdir ${!i}), "
+            constructor_args+="'$(python "$tool_dir/$find_any_address_constructor_args" $outdir ${!i})', "
         else
             constructor_args+="${!i}, "
         fi
