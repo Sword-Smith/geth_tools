@@ -10,7 +10,7 @@ then
     geth --datadir $datadir --password tools/password.txt account new
     rm -rf $outdir
     mkdir $outdir
-    echo "$(ls -lt $keystore | tail -1 | awk '{print $9}' | rev | cut -c1-40 | rev)" > tools/my_address
+    echo "0x$(ls -lt $keystore | tail -1 | awk '{print $9}' | rev | cut -c1-40 | rev)" > tools/my_address
     exit 0
 fi
 
@@ -25,5 +25,5 @@ then
     geth --datadir $datadir --password tools/password.txt account new
     rm -rf $outdir
     mkdir $outdir
-    echo "$(ls -lt $keystore | tail -1 | awk '{print $9}' | rev | cut -c1-40 | rev)" > tools/my_address
+    echo "0x$(ls -lt $keystore | tail -1 | awk '{print $9}' | rev | cut -c1-40 | rev)" > tools/my_address
 fi
