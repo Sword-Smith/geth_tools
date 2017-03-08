@@ -88,14 +88,15 @@ then
     # Iterate over constructor arguments.
     for i in $(seq $(expr $requried_arguments_offset + 1) $amount_of_args)
     do
-        if [[ "${!i}" =~ ^_address_.* ]]; then
+        if [[ "${!i}" == "_address_my" ]]; then
+            constructor_args+="'$(cat $tool_dir/my_address)', "
+        elif [[ "${!i}" =~ ^_address_.* ]]; then
             constructor_args+="'$(python "$tool_dir/$find_any_address_constructor_args" $outdir ${!i})', "
         else
             constructor_args+="${!i}, "
         fi
     done
 fi
-
 
 # Define javascript to invoke constructor
 filter_out_id="Javascript message:"
