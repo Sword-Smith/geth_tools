@@ -11,19 +11,16 @@ password_fn="$tool_dir/password.txt"
 
 # If env. var undef, store to "out", otherwise "t/out".
 outdir="out/"
-if [ "$GETH_TEST" == "TEST" ]
-then
+if [ "$GETH_TEST" == "TEST" ]; then
     outdir="t/$outdir"
 fi
 
 system_platform=$(uname)
 # IPC path is a hardcoded value in Ethereum Wallet GUI, cf.
 # http://ethereum.stackexchange.com/questions/4418/how-to-change-to-private-network-in-etherum-wallet/4429
-if [[ $system_platform == "Linux" ]]
-then
+if [[ $system_platform == "Linux" ]]; then
     ipcpath="$HOME/.ethereum/geth.ipc"
-elif [[ $system_platform == "Darwin" ]]
-then
+elif [[ $system_platform == "Darwin" ]]; then
     ipcpath="$HOME/Library/Ethereum/geth.ipc"
 else
     echo "The system system platform is not Linux or Darwin, we only support one of these"
@@ -32,38 +29,41 @@ fi
 
 # Check that source code file and password are provided
 
-if [ $# -lt $requried_arguments_offset ]
-then
+if [ $# -lt $requried_arguments_offset ]; then
     echo "Usage: compile <source file> [arg0 of constructor] [arg1 of constructor] ..."
     exit 1
 fi
 
 # Check that source code file exists
-if [ ! -f $1 ]
-then
+if [ ! -f $1 ]; then
     echo "Source file \"$1\" not found."
     exit 1
 fi
 
-password=$(cat $password_fn)
-bn=$(basename $1 .sol)
+file_ext="${1##*.}"
+bn="$(basename $1 .$file_ext)"
 
-# Check that the first letter of the file name is a capitalized letter
-test="$(basename $1)"
-if [[ "${test:0:1}" =~ [a-z0-9] ]]
-then
-    echo "Invalid file name, first letter must be capitalized!"
+if [[ $file_ext == "sol" ]]; then
+    # Check that the first letter of the file name is a capitalized letter
+    if [[ "${bn:0:1}" =~ [a-z0-9] ]]; then
+        echo "Invalid file name, first letter must be capitalized!"
+        exit 1
+    fi
+    cd $(dirname $1)
+    solc -o ../../$outdir --abi --bin $(basename $1) # Compiles Solidity to EVM
+    cd ../../
+elif [[ $file_ext == "bahr" ]]; then
+    src/haskell/Heather/src/Main $1
+else
+    echo "Only supports .bahr or .sol files"
     exit 1
 fi
 
 mkdir -p $outdir
 mkdir -p "$outdir/$gen_js_dir"
-cd $(dirname $1)
-solc -o ../../$outdir --abi --bin $(basename $1) # Compiles Solidity to EVM
-cd ../../
 
 # Find filenames
-abi_def_fn="$outdir/$bn.sol:$bn.abi"
+abi_def_fn="$outdir/$bn.$file_ext:$bn.abi"
 abi_source="$(cat $abi_def_fn)"
 bin_fn="$outdir/$bn.bin"
 bin="0x$(cat $bin_fn)"
@@ -72,8 +72,7 @@ bin="0x$(cat $bin_fn)"
 expected_amount_of_args=$(python "$tool_dir/$constructor_args_script" $abi_def_fn)
 amount_of_constructor_args=$(expr $# - $requried_arguments_offset)
 
-if [[ $expected_amount_of_args -ne $amount_of_constructor_args ]]
-then
+if [[ $expected_amount_of_args -ne $amount_of_constructor_args ]]; then
     echo "Wrong number of arguments given for the constructor: Expected $expected_amount_of_args but got $amount_of_constructor_args"
     echo "You may also want to check that the constructor has the same name as the contract"
     exit 1
@@ -83,8 +82,7 @@ fi
 constructor_args=""
 args=("$@")
 amount_of_args=$#
-if [[ $amount_of_args -gt $requried_arguments_offset ]]
-then
+if [[ $amount_of_args -gt $requried_arguments_offset ]]; then
     # Iterate over constructor arguments.
     for i in $(seq $(expr $requried_arguments_offset + 1) $amount_of_args)
     do
@@ -130,8 +128,9 @@ js_fn="$outdir/$gen_js_dir/javascript_$bn"
 echo $js_code > $js_fn
 
 # Run javascript and store contract address
+password=$(cat $password_fn)
 address_fn="$outdir/$bn.address"
 address=$(geth --exec "personal.unlockAccount(web3.eth.accounts[0], '$password'); loadScript('$js_fn');" attach $ipcpath | tee /dev/stderr | grep -v true | grep -v "$filter_out_id")
 
 # The results of constructor args and address will be written to the file out/contract.txt
-python "$tool_dir/$save_json_of_results" $outdir $bn $constructor_args $address
+python "$tool_dir/$save_json_of_results" $outdir $bn $file_ext $constructor_args $address

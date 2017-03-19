@@ -7,17 +7,14 @@ password_fn="$tool_dir/password.txt"
 password=$(cat $password_fn)
 
 outdir="out/"
-if [ "$GETH_TEST" == "TEST" ]
-then
+if [ "$GETH_TEST" == "TEST" ]; then
     outdir="t/$outdir"
 fi
 
 system_platform=$(uname)
-if [[ $system_platform == "Linux" ]]
-then
+if [[ $system_platform == "Linux" ]];then
     ipcpath="$HOME/.ethereum/geth.ipc"
-elif [[ $system_platform == "Darwin" ]]
-then
+elif [[ $system_platform == "Darwin" ]]; then
     ipcpath="$HOME/Library/Ethereum/geth.ipc"
 else
     echo "The system system platform is not Linux or Darwin, we only support one of these"
@@ -33,7 +30,13 @@ do
     bn="$(echo $line | awk '{print $2}')"
     ts="$(echo $line | awk '{print $3}')"
     add="$(echo $line | awk '{print $1}')"
-    abi_def=$(cat "$outdir/$bn.sol:$bn.abi")
+    abi_def=""
+    # Since we can't differentiate between sol or bahr source code, we try to find both ABI defs.
+    if [[ -f "$outdir/$bn.sol:$bn.abi" ]]; then
+        abi_def=$(cat "$outdir/$bn.sol:$bn.abi")
+    else
+        abi_def=$(cat "$outdir/$bn.bahr:$bn.abi")
+    fi
     dec_var_code+="var $bn"_"$ts=web3.eth.contract($abi_def).at('$add');"
 done <<< "$deployed_contracts"
 

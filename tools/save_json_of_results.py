@@ -4,7 +4,7 @@ import json
 import sys
 import os
 
-requried_arguments_offset = 3
+requried_arguments_offset = 4
 
 def touch(fname, times=None):
     with open(fname, 'a'):
@@ -25,7 +25,7 @@ def is_digit(test):
         return False
 
     # sys.argv[1] is outdir path, sys.argv[2] is basename of source file
-with open( sys.argv[1] + sys.argv[2] + ".sol:" + sys.argv[2] + ".abi") as data_file:
+with open( sys.argv[1] + sys.argv[2] + ".{0}:".format(sys.argv[3]) + sys.argv[2] + ".abi") as data_file:
     data = json.load(data_file)
     arg_list = []
     i=requried_arguments_offset
