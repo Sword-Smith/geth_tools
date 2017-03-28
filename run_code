@@ -2,14 +2,19 @@
 # This bash script runs the code present in the loadscript
 # $1 is the chosen to JS containing code to be executed
 
-tool_dir="tools"
-password_fn="$tool_dir/password.txt"
+password_fn="password.txt"
 password=$(cat $password_fn)
+requried_arguments_offset=2
+outdir=$1
 
-outdir="out/"
-if [ "$GETH_TEST" == "TEST" ]; then
-    outdir="t/$outdir"
+if [ $# -lt $requried_arguments_offset ]; then
+    echo "Usage: run_code <outdir> <file to execute>"
+    exit 1
 fi
+
+# if [ "$GETH_TEST" == "TEST" ]; then
+#     outdir="t/$outdir"
+# fi
 
 system_platform=$(uname)
 if [[ $system_platform == "Linux" ]];then
@@ -23,7 +28,7 @@ fi
 
 # Given a name, I would like the address on one line, and the ABI def. on another
 # DEVFIX: Can we check the return value of this Python script?
-deployed_contracts=$(python tools/interpret_contracts_json.py $outdir )
+deployed_contracts=$(python interpret_contracts_json.py $outdir )
 dec_vars_code=""
 while read line
 do
@@ -32,17 +37,13 @@ do
     add="$(echo $line | awk '{print $1}')"
     abi_def=""
     # Since we can't differentiate between sol or bahr source code, we try to find both ABI defs.
-    if [[ -f "$outdir/$bn.sol:$bn.abi" ]]; then
-        abi_def=$(cat "$outdir/$bn.sol:$bn.abi")
-    else
-        abi_def=$(cat "$outdir/$bn.bahr:$bn.abi")
-    fi
+    abi_def=$(cat "$outdir/$bn.abi")
     dec_var_code+="var $bn"_"$ts=web3.eth.contract($abi_def).at('$add');"
 done <<< "$deployed_contracts"
 
-mkdir -p "$outdir$gen_js_dir/"
+mkdir -p "$outdir/$gen_js_dir/"
 dec_var_fn="$outdir/$gen_js_dir/dec_var.js"
 echo "$dec_var_code" > $dec_var_fn
 
-run_commands_fn=$1
+run_commands_fn=$2
 geth --exec "personal.unlockAccount(web3.eth.accounts[0], '$password'); loadScript('$dec_var_fn'); loadScript('$run_commands_fn')" attach $ipcpath

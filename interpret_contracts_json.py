@@ -6,7 +6,7 @@
 import json
 import sys
 
-json_fn = sys.argv[1] + "/contracts.json"
+json_fn = sys.argv[1] + "/" + "contracts.json"
 
 def get_address():
     with open(json_fn, "r") as fh:
