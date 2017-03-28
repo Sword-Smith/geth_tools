@@ -1,0 +1,5 @@
+my_address
+out/*
+t/out/*
+auto_generated_js
+.ethereum_testserver_data
