@@ -64,10 +64,20 @@ DKK_TOKEN_ADDRESS=$(echo -n $(python $find_any_address_constructor_args $outdir 
 cp $2 "$2_bak"
 
 # Replace with the values we got from contracts.json
-sed -i "" -e "s/_my_address/$MY_ADDRESS/g" $2
-sed -i "" -e "s/_address_Tmc4_DKK/$DKK_TOKEN_ADDRESS/g" $2
-sed -i "" -e "s/_address_Tmc4_USD/$USD_TOKEN_ADDRESS/g" $2
-sed -i "" -e "s/_address_Tmc4_EUR/$EUR_TOKEN_ADDRESS/g" $2
+if [[ $system_platform == "Linux" ]]; then
+    sed -i "s/_my_address/$MY_ADDRESS/g" $2
+    sed -i "s/_address_Tmc4_DKK/$DKK_TOKEN_ADDRESS/g" $2
+    sed -i "s/_address_Tmc4_USD/$USD_TOKEN_ADDRESS/g" $2
+    sed -i "s/_address_Tmc4_EUR/$EUR_TOKEN_ADDRESS/g" $2
+elif [[ $system_platform == "Darwin" ]]; then
+    sed -i "" "s/_my_address/$MY_ADDRESS/g" $2
+    sed -i "" "s/_address_Tmc4_DKK/$DKK_TOKEN_ADDRESS/g" $2
+    sed -i "" "s/_address_Tmc4_USD/$USD_TOKEN_ADDRESS/g" $2
+    sed -i "" "s/_address_Tmc4_EUR/$EUR_TOKEN_ADDRESS/g" $2
+else
+    echo "The system system platform is not Linux or Darwin, we only support one of these"
+    exit 1
+fi
 
 if [[ $file_ext == "sol" ]]; then
     # Check that the first letter of the file name is a capitalized letter
