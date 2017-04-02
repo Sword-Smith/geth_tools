@@ -1,4 +1,0 @@
-rm out/contracts.json
-tools/compile src/solidity/Tmc3.sol 1000 "'EUR'" 0 "'EUR'"
-tools/compile src/solidity/TransactionContract0Tmc3.sol "'0x5442bad9e4466b468c66a9b0ed02ac73ef75befc'" "'0x1234567890123456789012345678901234567890'" 1 '_address_Tmc3_EUR'
-tools/run_code contract_execution/execute_transactionContract0_Tmc3_EUR.js
