@@ -53,6 +53,22 @@ fi
 file_ext="${2##*.}"
 bn="$(basename $2 .$file_ext)"
 
+# Pre-compile step
+MY_ADDRESS=$(cat my_address)
+# Fish out the addresses from contracts.json file
+EUR_TOKEN_ADDRESS=$(echo -n $(python $find_any_address_constructor_args $outdir '_address_Tmc4_EUR'))
+USD_TOKEN_ADDRESS=$(echo -n $(python $find_any_address_constructor_args $outdir '_address_Tmc4_USD'))
+DKK_TOKEN_ADDRESS=$(echo -n $(python $find_any_address_constructor_args $outdir '_address_Tmc4_DKK'))
+
+# Make a copy of the source file
+cp $2 "$2_bak"
+
+# Replace with the values we got from contracts.json
+sed -i "" -e "s/_my_address/$MY_ADDRESS/g" $2
+sed -i "" -e "s/_address_Tmc4_DKK/$DKK_TOKEN_ADDRESS/g" $2
+sed -i "" -e "s/_address_Tmc4_USD/$USD_TOKEN_ADDRESS/g" $2
+sed -i "" -e "s/_address_Tmc4_EUR/$EUR_TOKEN_ADDRESS/g" $2
+
 if [[ $file_ext == "sol" ]]; then
     # Check that the first letter of the file name is a capitalized letter
     if [[ "${bn:0:1}" =~ [a-z0-9] ]]; then
@@ -140,3 +156,5 @@ address=$(geth --exec "personal.unlockAccount(web3.eth.accounts[0], '$password')
 
 # The results of constructor args and address will be written to the file out/contract.txt
 python "$save_json_of_results" $outdir $bn $constructor_args $address
+
+mv "$2_bak" $2
