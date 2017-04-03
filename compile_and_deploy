@@ -96,7 +96,7 @@ if [[ $file_ext == "sol" ]]; then
     solc -o $outdir --abi --bin --overwrite $2 # Compiles Solidity to EVM
 elif [[ $file_ext == "bahr" ]]; then
     # DEVFIX: we assume that Heather bin is located in the following path.
-    ../Heather/src/main -o $outdir $2
+    ../Heather/src/Main -o $outdir $2
 else
     echo "Only supports .bahr or .sol files"
     exit 1
