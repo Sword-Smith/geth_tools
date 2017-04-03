@@ -2,8 +2,8 @@ web3.eth.defaultAccount = web3.eth.accounts[0];
 me = web3.eth.defaultAccount;
 console.log("My address is: " + me);
 
-t_contract = twoDifferentTranslateUsingKeywords_.address;
-console.log("twoDifferentTranslateUsingKeywords_ address is: " + t_contract);
+t_contract = twoDifferentTranslateUsingKeywordsTmc4_.address;
+console.log("twoDifferentTranslateUsingKeywordsTmc4_ address is: " + t_contract);
 code = web3.eth.getCode(t_contract);
 console.log("The code present on this address: " + code );
 tmc_address_EUR = Tmc4_EUR.address;
@@ -57,8 +57,8 @@ var balance_EUR = Tmc4_EUR.balanceOf(me);
 var balance_USD = Tmc4_USD.balanceOf(me);
 console.log("EUR: My balance is now: " + balance_EUR);
 console.log("USD: My balance is now: " + balance_USD);
-console.log("EUR & USD: Now executing contract twoDifferentTranslateUsingKeywords_");
-var execute_transaction = twoDifferentTranslateUsingKeywords_.execute({from: me, gas: 3000000} );
+console.log("EUR & USD: Now executing contract twoDifferentTranslateUsingKeywordsTmc4_");
+var execute_transaction = twoDifferentTranslateUsingKeywordsTmc4_.execute({from: me, gas: 3000000} );
 var t1 = web3.eth.getTransaction(execute_transaction);
 while(t1.blockNumber === null){
     t1 = web3.eth.getTransaction(execute_transaction);

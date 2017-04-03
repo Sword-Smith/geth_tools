@@ -1,8 +1,8 @@
 #!/bin/bash
 outdir="out"
-tmc_path="../Heather/solidity/Tmc4.sol"
-TC_path="../Heather/examples/twoDifferentTranslateUsingKeywordsTmc4.bahr"
-con_exe_path="test/contract_execution/twoDifferentTranslateUsingKeywordsTmc4.js"
+tmc_path="../Heather/solidity/Tmc3.sol"
+TC_path="../Heather/examples/twoDifferentTranslateUsingKeywordsTmc3.bahr"
+con_exe_path="test/contract_execution/twoDifferentTranslateUsingKeywordsTmc3.js"
 
 rm -rf $outdir
 ./compile_and_deploy $outdir $tmc_path 1000 "'EUR'" 0 "'EUR'"
