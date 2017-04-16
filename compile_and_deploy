@@ -26,6 +26,8 @@ mkdir -p $gen_js_dir
 #     outdir="t/$outdir"
 # fi
 
+# DEVFIX: Can we put in a check that the file name and the contract name are the same?
+
 # IPC path is a hardcoded value in Ethereum Wallet GUI, cf.
 # http://ethereum.stackexchange.com/questions/4418/how-to-change-to-private-network-in-etherum-wallet/4429
 if [[ $system_platform == "Linux" ]]; then
