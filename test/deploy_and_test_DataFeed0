@@ -1,0 +1,10 @@
+#!/bin/bash
+
+outdir="out"
+df_path="../Heather/solidity/DataFeed0.sol"
+con_exe_path="test/contract_execution/con_exec_DataFeed0.js"
+
+rm -rf $outdir
+./compile_and_deploy $outdir $df_path
+./run_code $outdir $con_exe_path
+
