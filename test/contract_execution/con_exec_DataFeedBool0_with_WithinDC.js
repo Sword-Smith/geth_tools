@@ -21,6 +21,10 @@ while(t0.blockNumber === null){
     t0 = web3.eth.getTransaction(set_tr);
 }
 
+// Check DF value
+var df_val = DataFeedBool0_.get(1003);
+console.log("DFBool0 returns: " + df_val);
+
 // Token smart contract
 tmc_address_EUR = Tmc4_EUR.address;
 console.log("EUR: The Tmc4 address is: " + tmc_address_EUR);

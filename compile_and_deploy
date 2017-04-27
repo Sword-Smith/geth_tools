@@ -80,7 +80,7 @@ if [[ $system_platform == "Linux" ]]; then
     sed -i "s/_address_Tmc3_USD/$USD_TOKEN_3_ADDRESS/g" $2
     sed -i "s/_address_Tmc3_EUR/$EUR_TOKEN_3_ADDRESS/g" $2
     sed -i "s/_address_DataFeed0_/$MSFT_DATAFEED_0_ADDRESS/g" $2
-    sed -i "s/_address_DataFeed0_/$MSFT_DATAFEEDBOOL0_ADDRESS/g" $2
+    sed -i "s/_address_DataFeedBool0_/$MSFT_DATAFEEDBOOL0_ADDRESS/g" $2
 elif [[ $system_platform == "Darwin" ]]; then
     sed -i "" "s/_my_address/$MY_ADDRESS/g" $2
     sed -i "" "s/_address_Tmc4_DKK/$DKK_TOKEN_4_ADDRESS/g" $2
@@ -90,7 +90,7 @@ elif [[ $system_platform == "Darwin" ]]; then
     sed -i "" "s/_address_Tmc3_USD/$USD_TOKEN_3_ADDRESS/g" $2
     sed -i "" "s/_address_Tmc3_EUR/$EUR_TOKEN_3_ADDRESS/g" $2
     sed -i "" "s/_address_DataFeed0_/$MSFT_DATAFEED_0_ADDRESS/g" $2
-    sed -i "" "s/_address_DataFeed0_/$MSFT_DATAFEEDBOOL0_ADDRESS/g" $2
+    sed -i "" "s/_address_DataFeedBool0_/$MSFT_DATAFEEDBOOL0_ADDRESS/g" $2
 else
     echo "The system system platform is not Linux or Darwin, we only support one of these"
     exit 1
@@ -104,6 +104,7 @@ if [[ $file_ext == "sol" ]]; then
     fi
     solc -o $outdir --abi --bin --overwrite $2 # Compiles Solidity to EVM
 elif [[ $file_ext == "bahr" ]]; then
+    cat $2
     # DEVFIX: we assume that Heather bin is located in the following path.
     ../Heather/src/Main -o $outdir $2
 else
