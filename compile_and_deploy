@@ -64,8 +64,12 @@ EUR_TOKEN_3_ADDRESS=$(echo -n $(python $find_any_address_constructor_args $outdi
 USD_TOKEN_3_ADDRESS=$(echo -n $(python $find_any_address_constructor_args $outdir '_address_Tmc3_USD'))
 DKK_TOKEN_3_ADDRESS=$(echo -n $(python $find_any_address_constructor_args $outdir '_address_Tmc3_DKK'))
 MSFT_DATAFEED_0_ADDRESS=$(echo -n $(python $find_any_address_constructor_args $outdir '_address_DataFeed0_'))
-MSFT_DATAFEEDBOOL0_ADDRESS=$(echo -n $(python $find_any_address_constructor_args $outdir '_address_DataFeedBool0_'))
+MSFT_DATAFEEDBOOL0_ADDRESS=$(echo -n $(python $find_any_address_constructor_args $outdir '_address_DataFeedBool1_ZERO'))
+MSFT_DATAFEEDBOOL1_ADDRESS=$(echo -n $(python $find_any_address_constructor_args $outdir '_address_DataFeedBool1_ONE'))
+MSFT_DATAFEEDBOOL2_ADDRESS=$(echo -n $(python $find_any_address_constructor_args $outdir '_address_DataFeedBool1_TWO'))
 
+echo "MSFT_DATAFEEDBOOL0_ADDRESS is"
+echo "$MSFT_DATAFEEDBOOL0_ADDRESS"
 
 # Make a copy of the source file
 cp $2 "$2_bak"
@@ -81,6 +85,8 @@ if [[ $system_platform == "Linux" ]]; then
     sed -i "s/_address_Tmc3_EUR/$EUR_TOKEN_3_ADDRESS/g" $2
     sed -i "s/_address_DataFeed0_/$MSFT_DATAFEED_0_ADDRESS/g" $2
     sed -i "s/_address_DataFeedBool0_/$MSFT_DATAFEEDBOOL0_ADDRESS/g" $2
+    sed -i "s/_address_DataFeedBool1_/$MSFT_DATAFEEDBOOL1_ADDRESS/g" $2
+    sed -i "s/_address_DataFeedBool2_/$MSFT_DATAFEEDBOOL2_ADDRESS/g" $2
 elif [[ $system_platform == "Darwin" ]]; then
     sed -i "" "s/_my_address/$MY_ADDRESS/g" $2
     sed -i "" "s/_address_Tmc4_DKK/$DKK_TOKEN_4_ADDRESS/g" $2
@@ -90,7 +96,9 @@ elif [[ $system_platform == "Darwin" ]]; then
     sed -i "" "s/_address_Tmc3_USD/$USD_TOKEN_3_ADDRESS/g" $2
     sed -i "" "s/_address_Tmc3_EUR/$EUR_TOKEN_3_ADDRESS/g" $2
     sed -i "" "s/_address_DataFeed0_/$MSFT_DATAFEED_0_ADDRESS/g" $2
-    sed -i "" "s/_address_DataFeedBool0_/$MSFT_DATAFEEDBOOL0_ADDRESS/g" $2
+    sed -i "" "s/_address_DataFeedBool1_ZERO/$MSFT_DATAFEEDBOOL0_ADDRESS/g" $2
+    sed -i "" "s/_address_DataFeedBool1_ONE/$MSFT_DATAFEEDBOOL1_ADDRESS/g" $2
+    sed -i "" "s/_address_DataFeedBool1_TWO/$MSFT_DATAFEEDBOOL2_ADDRESS/g" $2
 else
     echo "The system system platform is not Linux or Darwin, we only support one of these"
     exit 1
@@ -106,7 +114,7 @@ if [[ $file_ext == "sol" ]]; then
 elif [[ $file_ext == "bahr" ]]; then
     cat $2
     # DEVFIX: we assume that Heather bin is located in the following path.
-    ../Heather/src/Main -o $outdir $2
+    heather -o $outdir $2
 else
     echo "Only supports .bahr or .sol files"
     exit 1
@@ -145,6 +153,8 @@ if [[ $amount_of_args -gt $requried_arguments_offset ]]; then
         fi
     done
 fi
+
+echo "$constructor_args"
 
 # Define javascript to invoke constructor
 filter_out_id="Javascript message:"

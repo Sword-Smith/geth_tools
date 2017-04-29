@@ -3,19 +3,45 @@ me = web3.eth.defaultAccount;
 console.log("My address is: " + me);
 
 // Derivative Contract
-t_contract = TestNestedIfWithin_.address;
-console.log("TestNestedIfWithin_ address is: " + t_contract);
+t_contract = TestCanonicalNestedBahr_.address;
+console.log("TestCanonicalNestedBahr_ address is: " + t_contract);
 code = web3.eth.getCode(t_contract);
 console.log("The code present on this address: " + code );
 
-// Data feed contract
-DF_contract = DataFeedBool0_.address;
-console.log("DataFeedBool0_ address is: " + DF_contract);
+// Data feed contract zero
+var DF_contract = DataFeedBool1_ZERO.address;
+console.log("DataFeedBool1_ address is: " + DF_contract);
 code = web3.eth.getCode(DF_contract);
 console.log("The code present on this address: " + code);
 
 console.log("Now setting value in DataFeed0 contract");
-var set_tr = DataFeedBool0_.set( 101, true , {from: me, gas: 3000000} );
+var set_tr = DataFeedBool1_ZERO.set( 101, false , {from: me, gas: 3000000} );
+var t0 = web3.eth.getTransaction(set_tr);
+while(t0.blockNumber === null){
+    t0 = web3.eth.getTransaction(set_tr);
+}
+
+// Data feed contract zero
+DF_contract = DataFeedBool1_ONE.address;
+console.log("DataFeedBool1_ address is: " + DF_contract);
+code = web3.eth.getCode(DF_contract);
+console.log("The code present on this address: " + code);
+
+console.log("Now setting value in DataFeed0 contract");
+var set_tr = DataFeedBool1_ONE.set( 101, true , {from: me, gas: 3000000} );
+var t0 = web3.eth.getTransaction(set_tr);
+while(t0.blockNumber === null){
+    t0 = web3.eth.getTransaction(set_tr);
+}
+
+// Data feed contract zero
+DF_contract = DataFeedBool1_TWO.address;
+console.log("DataFeedBool1_ address is: " + DF_contract);
+code = web3.eth.getCode(DF_contract);
+console.log("The code present on this address: " + code);
+
+console.log("Now setting value in DataFeed0 contract");
+var set_tr = DataFeedBool1_TWO.set( 101, true , {from: me, gas: 3000000} );
 var t0 = web3.eth.getTransaction(set_tr);
 while(t0.blockNumber === null){
     t0 = web3.eth.getTransaction(set_tr);
@@ -48,8 +74,8 @@ console.log("EUR: The spenderToApproval method returns: " + spenderToApproval1_E
 // Do the transfer by executing the contract
 var balance_EUR = Tmc4_EUR.balanceOf(me);
 console.log("EUR: My balance is now: " + balance_EUR);
-console.log("EUR: Now executing contract TestNestedIfWithin_");
-var execute_transaction = TestNestedIfWithin_.execute({from: me, gas: 3000000} );
+console.log("EUR: Now executing contract TestCanonicalNestedBahr_");
+var execute_transaction = TestCanonicalNestedBahr_.execute({from: me, gas: 3000000} );
 var t1 = web3.eth.getTransaction(execute_transaction);
 while(t1.blockNumber === null){
     t1 = web3.eth.getTransaction(execute_transaction);
@@ -64,7 +90,7 @@ var balance_EUR = Tmc4_EUR.balanceOf(me);
 console.log("EUR: My balance is now: " + balance_EUR);
 
 // Derivative Contract
-t_contract = TestNestedIfWithin_.address;
-console.log("TestNestedIfWithin_ address is: " + t_contract);
+t_contract = TestCanonicalNestedBahr_.address;
+console.log("TestCanonicalNestedBahr_ address is: " + t_contract);
 code = web3.eth.getCode(t_contract);
 console.log("The code present on this address: " + code );

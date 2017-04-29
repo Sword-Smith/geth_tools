@@ -12,7 +12,7 @@ def main(outdir, contractName, fromCmd):
 
             for contract in data:
                 if ( contract_name[0] == contract["name"]):
-                    mcs= filter(lambda x:x["name"]=="tokenSymbol", contract["args"])
+                    mcs= filter(lambda x:x["name"]=="tokenSymbol" or x["name"]=="dataFeedSymbol", contract["args"])
                     if len(mcs) == 1:
                         if (mcs[0]["value"] == contract_name[1]):
                             if (fromCmd):

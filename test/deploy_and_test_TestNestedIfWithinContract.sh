@@ -10,4 +10,5 @@ rm -rf $outdir
 ./compile_and_deploy $outdir $DF_path
 ./compile_and_deploy $outdir $TC_path
 ./run_code $outdir $con_exe_path
+sleep 120
 ./run_code $outdir $con_exe_path
