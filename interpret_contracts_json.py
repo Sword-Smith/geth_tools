@@ -20,7 +20,7 @@ def get_address():
             finalResult[i].append(item["address"])
             finalResult[i].append(item["name"])
 
-            ts =  filter(lambda x:x["name"] == "tokenSymbol", item["args"])
+            ts =  filter(lambda x:x["name"] == "tokenSymbol" or x["name"] == "dataFeedSymbol", item["args"])
 
             if len(ts) == 1:
                 finalResult[i].append(ts[0]["value"])
