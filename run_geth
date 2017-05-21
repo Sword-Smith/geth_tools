@@ -14,5 +14,5 @@ else
     exit 1
 fi
 
-own_ip=$(ifconfig | grep -A6 '^e' |  grep -i Mask | grep -i cast | awk '{print $2}' | sed 's/addr://')
+own_ip=$(ifconfig | grep -A6 '^[ew]' |  grep -i Mask | grep -i cast | awk '{print $2}' | sed 's/addr://')
 geth --fast --cache 512 --ipcpath $ipcpath --networkid 42 --port 30301 --rpc --rpcaddr $own_ip --rpcport 30302 --datadir ./.ethereum_testserver_data --jspath ./scripts/ --mine --minerthreads=1 console 2>> ./out/error.log
