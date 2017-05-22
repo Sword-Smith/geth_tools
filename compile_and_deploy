@@ -68,9 +68,6 @@ MSFT_DATAFEEDBOOL0_ADDRESS=$(echo -n $(python $find_any_address_constructor_args
 MSFT_DATAFEEDBOOL1_ADDRESS=$(echo -n $(python $find_any_address_constructor_args $outdir '_address_DataFeedBool1_ONE'))
 MSFT_DATAFEEDBOOL2_ADDRESS=$(echo -n $(python $find_any_address_constructor_args $outdir '_address_DataFeedBool1_TWO'))
 
-echo "MSFT_DATAFEEDBOOL0_ADDRESS is"
-echo "$MSFT_DATAFEEDBOOL0_ADDRESS"
-
 # Make a copy of the source file
 cp $2 "$2_bak"
 
@@ -153,8 +150,6 @@ if [[ $amount_of_args -gt $requried_arguments_offset ]]; then
     done
 fi
 
-echo "$constructor_args"
-
 # Define javascript to invoke constructor
 filter_out_id="Javascript message:"
 js_code="var contractObject = web3.eth.contract($abi_source); "
@@ -191,6 +186,7 @@ password=$(cat $password_fn)
 address_fn="$outdir/$bn.address"
 address=$(geth --exec "personal.unlockAccount(web3.eth.accounts[0], '$password'); loadScript('$js_fn');" attach $ipcpath | tee /dev/stderr | grep -v true | grep -v "$filter_out_id")
 
+echo $address
 # The results of constructor args and address will be written to the file out/contract.txt
 python "$save_json_of_results" $outdir $bn $constructor_args $address
 
