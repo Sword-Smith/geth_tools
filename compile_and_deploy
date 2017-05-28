@@ -108,11 +108,11 @@ if [[ $file_ext == "sol" ]]; then
         exit 1
     fi
     solc -o $outdir --abi --bin --overwrite $2 # Compiles Solidity to EVM
-elif [[ $file_ext == "bahr" ]]; then
+elif [[ $file_ext == "bahr" || $file_ext == "dag" ]]; then
     cat $2
     daggerc -o $outdir $2
 else
-    echo "Only supports .bahr or .sol files"
+    echo "Only supports .bahr and .dag, or .sol files"
     exit 1
 fi
 
