@@ -4,9 +4,11 @@ Tools to avoid having to work in the Geth console directly
 # Install
 Currently we only support OS X and Linux!
 
-##Prerequisite
+## Prerequisite
 1. Geth (https://github.com/ethereum/go-ethereum/wiki/geth)
 2. DaggerC (https://github.com/Sword-Smith/Daggerc)
+
+To setup geth with our tooling. 
 
 1. Clone repo
 2. Run "initialize_genesis_block"
