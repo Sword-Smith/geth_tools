@@ -5,6 +5,7 @@ use feature qw(signatures);
 no warnings qw(experimental::signatures);
 
 use Cwd;
+use File::Basename; # Provides access to basename subroutine
 use File::HomeDir;
 
 sub usage(){
@@ -41,7 +42,21 @@ if ( $system_platform eq "Linux" ){
 usage() if scalar @ARGV < $requried_arguments_offset;
 
 # Check that the source code file exists
-unless ( -e $ARGV[2]) {
+unless ( -e $ARGV[1]) {
     die "Source file $ARGV[1] was not found.";
 }
 
+my $source_fn = $ARGV[1];
+$source_fn =~ /(.*?\.)(.*)$/;
+my $file_ext = $2;
+my $basename = basename("$source_fn");
+
+# Get own Ethereum address
+open( my $fh, "<", "my_address"); # DEVNOTE: Is it smart to hardcode my_address filename?
+my $my_address = <$fh>;
+
+
+say $my_address;
+
+# In the next step, we call a python script to find an address
+# Perhaps we can reuse the Python script for now and then later port that to Perl?
