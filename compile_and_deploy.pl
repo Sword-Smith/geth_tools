@@ -60,3 +60,14 @@ say $my_address;
 
 # In the next step, we call a python script to find an address
 # Perhaps we can reuse the Python script for now and then later port that to Perl?
+# Given a constructor argument matching _address.*, we seek the corresponding address
+# So we want to loop through all arguments except the first two
+# BUT in the origninal BASH script, strings beginning with _address_ within the source
+# code are also replaced. Here, we only replace those which are given in the command line.
+my %name2address = ();
+for my $arg (@ARGV[2..scalar @ARGV - 1]){
+    if ( $arg =~ /^_address_(.*)/ ){
+        my $address = `python $find_any_address_constructor_args $outdir $arg`;
+        $name2address{$1} = $address;
+    }
+}
