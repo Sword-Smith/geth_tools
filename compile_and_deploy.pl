@@ -47,11 +47,6 @@ unless ( -e $ARGV[1]) {
     die "Source file $ARGV[1] was not found.";
 }
 
-my $source_fn = $ARGV[1];
-$source_fn =~ /(.*?\.)(.*)$/;
-my $file_ext = $2;
-my $basename = basename("$source_fn");
-
 # Get own Ethereum address
 open( my $fh, "<", "my_address"); # DEVNOTE: Is it smart to hardcode my_address filename?
 my $my_address = <$fh>;
@@ -74,7 +69,8 @@ for my $arg (@ARGV[2..scalar @ARGV - 1]){
     }
 }
 
-# Precompile source code by replacing keywords with addresses
+# Precompile source code by replacing keywords with addresses. Also create backup.
+my $source_fn = $ARGV[1];
 system("cp $source_fn $source_fn"."_backup");
 my $file = path($source_fn);
 my $data = $file->slurp_utf8;
@@ -91,7 +87,25 @@ $file->spew_utf8($data);
 
 # Do Check that .sol file names are capitalized and do the actual calculation
 # by invoking solc/daggerc.
-say $file_ext;
+$source_fn =~ /(.*?\.)(.*)$/;
+my $file_ext = $2;
+my $basename = basename("$source_fn");
 if ( $file_ext eq "sol" ){
-
+    die "File name of a Solidity file must begin with a capital letter." if $basename =~ /^(?i)[a-z0-9](?-i)/;
+    system("solc -o $outdir --abi --bin --overwrite $source_fn");
+} elsif ( $file_ext ~~ [ qw(bahr dag) ] ){
+    system("daggerc -o $outdir $source_fn");
+} else {
+    die "This program only supports .dag and .sol source files";
 }
+
+# Find filenames
+my $abi_def_fn = "$outdir/$bn.abi"
+my $abi_source = path($abi_def_fn)->slurp; # Store the whole file content in $abi_source
+my $bin_fn     = "$outdir/$bn.bin"
+open( $fh, "<", $bin_fn );
+my $bin        = <$fh> // die "Unable to read the produced binary file $bin_fn";
+$bin           = "0x" . $bin;
+
+# DEVNOTE: Is $abi_source needed here? How do we count the number of required arguments?
+# We have a Python scipt for that but it is also possible in Perl.
