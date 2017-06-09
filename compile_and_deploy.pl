@@ -7,6 +7,7 @@ no warnings qw(experimental::signatures);
 use Cwd;
 use File::Basename; # Provides access to basename subroutine
 use File::HomeDir;
+use Path::Tiny qw(path);
 
 sub usage(){
     die "Usage: compile <outdir> <source file> [arg0 of constructor] [arg1 of constructor] ...";
@@ -54,6 +55,7 @@ my $basename = basename("$source_fn");
 # Get own Ethereum address
 open( my $fh, "<", "my_address"); # DEVNOTE: Is it smart to hardcode my_address filename?
 my $my_address = <$fh>;
+close $fh || die;
 
 
 say $my_address;
@@ -70,4 +72,26 @@ for my $arg (@ARGV[2..scalar @ARGV - 1]){
         my $address = `python $find_any_address_constructor_args $outdir $arg`;
         $name2address{$1} = $address;
     }
+}
+
+# Precompile source code by replacing keywords with addresses
+system("cp $source_fn $source_fn"."_backup");
+my $file = path($source_fn);
+my $data = $file->slurp_utf8;
+open( $fh, "+<", $source_fn );
+while( my $line = <$fh> ){
+    chomp $line;
+    if ( $line =~ /_address_([^\s]*)/ ){
+        my $address = `python $find_any_address_constructor_args $outdir _address_$1`;
+        $data =~ s/_address_$1/$address/g;
+    }
+}
+close( $fh );
+$file->spew_utf8($data);
+
+# Do Check that .sol file names are capitalized and do the actual calculation
+# by invoking solc/daggerc.
+say $file_ext;
+if ( $file_ext eq "sol" ){
+
 }
