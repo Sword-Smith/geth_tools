@@ -9,6 +9,6 @@ rm -rf $outdir
 ./compile_and_deploy.pl $outdir $tmc_path 1000 "'EUR'" 0 "'EUR'"
 ./compile_and_deploy.pl $outdir $DF_path
 ./compile_and_deploy.pl $outdir $TC_path
-./run_code $outdir $con_exe_path
+./run_code.pl $outdir $con_exe_path
 sleep 180
-./run_code $outdir $con_exe_path
+./run_code.pl $outdir $con_exe_path

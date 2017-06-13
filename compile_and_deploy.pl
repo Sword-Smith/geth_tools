@@ -64,9 +64,7 @@ while( my $line = <$fh> ){
     chomp $line;
     while ( $line =~ /_address_([^\s,]*)/ ){
         my $contract_name = $1;
-        say "\$contract_name = $contract_name"; #DEVRM
         my $address = $contract_name eq "my" ? $my_address : `python $find_any_address_constructor_args $outdir _address_$1`;
-        say "\$address=$address"; #DEVRM
         chomp $address;
         die "No address found for address replacement for _address_$1 in source code file $source_fn" unless $address =~ /^0x/;
         $data =~ s/_address_$contract_name/$address/g;
@@ -96,7 +94,6 @@ system("cp $source_fn"."_backup $source_fn");
 
 # Find filenames
 my $abi_def_fn = "$outdir/$fn_no_ext.abi"; # DEVNOTE: Should $basename or $fn_no_ext be used here?
-#say $abi_def_fn;
 my $abi_source = path($abi_def_fn)->slurp; # Store the whole file content in $abi_source
 my $bin_fn     = "$outdir/$fn_no_ext.bin";
 open( $fh, "<", $bin_fn );
@@ -168,10 +165,8 @@ open( $fh, "<", $password_fn ) || die;
 my $password = <$fh>;
 chomp $password;
 close( $fh ) || die;
-
 # Run the produced Javascript in Geth and store the output in $op
 my $geth_output = `geth --exec "personal.unlockAccount(web3.eth.accounts[0], '$password'); loadScript('$js_fn');" attach $ipcpath`;
-
 say "output from Geth execution:\n$geth_output";
 
 # Find address in $geth_output and store it in a JSON file

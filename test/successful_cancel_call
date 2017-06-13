@@ -8,7 +8,7 @@ rm -rf $outdir
 ./compile_and_deploy.pl $outdir $tmc_path 1000 "'DKK'" 0 "'DKK'"
 ./compile_and_deploy.pl $outdir $tmc_path 1000 "'USD'" 0 "'USD'"
 ./compile_and_deploy.pl $outdir $TC_path
-./run_code $outdir $con_exe_path
+./run_code.pl $outdir $con_exe_path
 # sleep 240
-# ./run_code $outdir $con_exe_path
-# ./run_code $outdir $con_exe_path
+# ./run_code.pl $outdir $con_exe_path
+# ./run_code.pl $outdir $con_exe_path

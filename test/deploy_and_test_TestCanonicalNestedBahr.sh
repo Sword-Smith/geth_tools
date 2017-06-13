@@ -13,8 +13,8 @@ rm -rf $outdir
 ./compile_and_deploy.pl $outdir $DF_path1 "'ONE'"
 ./compile_and_deploy.pl $outdir $DF_path2 "'TWO'"
 ./compile_and_deploy.pl $outdir $TC_path
-./run_code $outdir $con_exe_path
+./run_code.pl $outdir $con_exe_path
 sleep 120
-./run_code $outdir $con_exe_path
+./run_code.pl $outdir $con_exe_path
 sleep 60 
-./run_code $outdir $con_exe_path
+./run_code.pl $outdir $con_exe_path

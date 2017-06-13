@@ -15,7 +15,7 @@ df_addr=$(./compile_and_deploy.pl $outdir $DF_path)
 echo "DF ADDR"
 echo $df_addr
 ./compile_and_deploy.pl $outdir $TC_path "'$tmc_addr'" "'$df_addr'" "'0x0000000000000000000000000000000000000000'" "'$my_address'"
-./run_code $outdir $con_exe_path
+./run_code.pl $outdir $con_exe_path
 sleep 180
-./run_code $outdir $con_exe_path
-./run_code $outdir $con_exe_path
+./run_code.pl $outdir $con_exe_path
+./run_code.pl $outdir $con_exe_path
