@@ -1,3 +1,0 @@
-own_ip=$(ifconfig | grep inet | grep -i Mask | grep -i cast | awk '{print $2}' | sed 's/addr://')
-own_enode=$(cat ./out/error.log | grep Listening | awk '{print $5}' | sed "s/\[::\]/$own_ip/" | grep -v on | head -n1);
-echo "$own_enode"
