@@ -16,7 +16,7 @@ console.log("The code present on this address: " + code);
 
 console.log("Now setting value in DataFeed0 contract");
 // set(key, price) -- can the key also be a string?
-var set_tr = DataFeed0_.set( 101, 51, {from: me, gas: 3000000} );
+var set_tr = DataFeed0_.set( 60, 60, {from: me, gas: 3000000} );
 var t0 = web3.eth.getTransaction(set_tr);
 while(t0.blockNumber === null){
     t0 = web3.eth.getTransaction(set_tr);
@@ -32,7 +32,7 @@ console.log("EUR: The allowance is now: " + allowance_EUR);
 
 // Allow contract to transfer 100 of my money
 console.log('EUR: Now calling "approve"');
-var b_EUR = Tmc4_EUR.approve( t_contract, 100, {from: me, gas: 3000000} );
+var b_EUR = Tmc4_EUR.approve( t_contract, 50, {from: me, gas: 3000000} );
 var t0_EUR = web3.eth.getTransaction(b_EUR);
 while(t0_EUR.blockNumber === null){
     t0_EUR = web3.eth.getTransaction(b_EUR);
