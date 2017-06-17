@@ -112,8 +112,6 @@ sub store_contract_info_to_json( $abi_source, $contract_address, $contract_name,
                 }
 
                 # Check that name duplication does not occur
-                # If a contract has the same name, we can assume that the constructor
-                # signature is the same
                 if ( $constr_arg->{name} ~~ [qw( tokenSymbol dataFeedSymbol )] ){
                     if ( my @same_name_contracts =  grep { $_->{name} eq $contract_name } $contracts_json->@* ){
                         for my $potential_duplicate_contract ( @same_name_contracts ){
@@ -123,11 +121,11 @@ sub store_contract_info_to_json( $abi_source, $contract_address, $contract_name,
                                 say "Error! Name clash: name: $contract_name, sym: ".$constr_arg->{value} . ".";
                                 die "Duplicate contracts found for $contract_name";
                             }
-
                         }
                     }
                 }
             }
+
             $contract_json{args} = \@constr_args;
         }
     }
