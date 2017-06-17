@@ -18,5 +18,3 @@ To set up geth_tools
 Now a fully configured geth instance should be running.
 
 Solidity and Dagger contracts can now be deployed by running compile_and_deploy.pl
-
-There are integrations tests in test/
