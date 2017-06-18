@@ -1,0 +1,7 @@
+#!/bin/bash
+
+./compile_and_deploy.pl out/ example/Tmc4.sol 1000 "'A'" 0 "'A'"
+./compile_and_deploy.pl out/ example/Tmc4.sol 1000 "'B'" 0 "'B'"
+./compile_and_deploy.pl out/ example/DataFeed0.sol
+./compile_and_deploy.pl out/ example/CurrencySwap.sol
+./run_code.pl out example/executionScript.js
