@@ -41,6 +41,7 @@ sub find_address( $dir, $contract_name, $token_symbol ){
     return $contracts[0]->{address} if scalar @contracts == 1;
     die "No contract with name $contract_name found in $dir/contracts.json" unless @contracts;
     for my $contract ( @contracts ){
+        die qq(Multiple contracts with name "$contract_name" found in contracts.json but no constructor arguments found) unless $contract->{args};
         my @args = $contract->{args}->@*;
         @args = grep { $_->{name} ~~ [qw(tokenSymbol dataFeedSymbol)] } @args;
         die "Neither tokenSymbol nor dataFeedSymbol value found in args for $contract_name" unless @args;
@@ -62,7 +63,6 @@ sub get_number_of_constructor_args( $abi_def ){
     return 0 unless $constructors[0]->{inputs};
     return scalar $constructors[0]->{inputs}->@*;
 }
-
 
 # Stores the info about a compiled and deployed contract in "contract.json"
 sub store_contract_info_to_json( $abi_source, $contract_address, $contract_name, $precompiled_args ){
@@ -130,8 +130,15 @@ sub store_contract_info_to_json( $abi_source, $contract_address, $contract_name,
         }
     }
 
-    # We would also like to ensure that the produced contracts.json does not contain
-    # a duplicate value!
+    # Extra check that name duplication does not occur
+    # Dies if no tokenSymbol/dataFeedSymbol is present and contract with same name already exists
+    my @contracts_w_same_name = grep { $_->{name} eq $contract_name } $contracts_json->@*;
+    if ( @contracts_w_same_name ){
+        die "Duplicate contract name found for $contract_name" unless $contracts_w_same_name[0]->{args};
+        die "Duplicate contract name found for $contract_name" unless grep { $_->{name} ~~ [qw( tokenSymbol dataFeedSymbol )] } $contracts_w_same_name[0]->{args}->@*;
+    }
+
+    # Append the newly created contract to the JSON structure and write it to contracts.json
     push $contracts_json->@*, \%contract_json;
     open( $fh, ">", $contracts_fn );
     print $fh encode_json( $contracts_json );
