@@ -184,7 +184,7 @@ open( $fh, "+<", $source_fn );
 my $old_line = "";
 while( my $line = <$fh> ){
     chomp $line;
-    while ( $line =~ /_address_([^\s,]*)/ ){
+    while ( $line =~ /_address_([^\s,\)\;]*)/ ){
         my ($contract_name, $token_symbol) = split /_/, $1; # token_symbol may be undef
         my $address = $contract_name eq "my" ? $my_address : find_address($outdir, $contract_name, $token_symbol);
         chomp $address;
@@ -216,10 +216,6 @@ if ( $file_ext eq "sol" ){
 }
 
 
-# Remove the precompiled file
-system("rm $precompiled_fn");
-
-
 # Load the content of the binary file and the ABI def into variables
 my $abi_def_fn = "$outdir/$fn_no_ext.abi";
 my $abi_source = path($abi_def_fn)->slurp; # Store the whole file content in $abi_source
@@ -243,7 +239,7 @@ if ( $expected_number_of_args != $number_of_provided_constructor_args ){
 my @input_args   = (@ARGV[$requried_arguments_offset..scalar @ARGV -1]); # Args entered in command line
 my %name2address = ();
 for my $arg ( @input_args ){
-    if ( $arg =~ /_address_([^\s,]*)/ ){
+    if ( $arg =~ /_address_([^\s,\)\;]*)/ ){
         my ($contract_name, $token_symbol) = split /_/, $1; # token_symbol may be undef
         my $address = $contract_name eq "my" ? $my_address : find_address($outdir, $contract_name, $token_symbol);
         chomp $address;
@@ -322,6 +318,10 @@ my $ret = store_contract_info_to_json( $abi_source, $contract_address, $fn_no_ex
 # Indicate if program has been executed succesfully
 if ( $ret ){
     say "SUCCESS! Contract $source_fn deployed and placed on address $contract_address.";
+    # Remove the precompiled file
+    system("rm $precompiled_fn");
+
+    # If the deployment failed, the precompiled file is not removed since it may help with debugging
 } else {
     die "FAILURE! Something went wrong. Contract $source_fn was not deployed.";
 }
