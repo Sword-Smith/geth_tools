@@ -23,7 +23,6 @@ my $source_fn                 = $ARGV[1] // usage();
 my $precompiled_fn            = "$source_fn"."_precompiled";
 my $gen_js_dir                = "$outdir/auto_generated_js";
 my $datadir                   = ".ethereum_testserver_data"; # Also hardcoded in run_geth.pl
-my $save_json_of_results      = "save_json_of_results.py"; # When replacing this demand uniqueness!
 my $requried_arguments_offset = 2;
 my $password_fn               = "password.txt";
 my $current_dir               = getcwd();
@@ -134,8 +133,14 @@ sub store_contract_info_to_json( $abi_source, $contract_address, $contract_name,
     # Dies if no tokenSymbol/dataFeedSymbol is present and contract with same name already exists
     my @contracts_w_same_name = grep { $_->{name} eq $contract_name } $contracts_json->@*;
     if ( @contracts_w_same_name ){
-        die "Duplicate contract name found for $contract_name" unless $contracts_w_same_name[0]->{args};
-        die "Duplicate contract name found for $contract_name" unless grep { $_->{name} ~~ [qw( tokenSymbol dataFeedSymbol )] } $contracts_w_same_name[0]->{args}->@*;
+        if ( !$contracts_w_same_name[0]->{args} ){
+            say "Duplicate contract name found for $contract_name!";
+            return 0;
+        }
+        if ( !grep { $_->{name} ~~ [qw( tokenSymbol dataFeedSymbol )] } $contracts_w_same_name[0]->{args}->@* ){
+            say "Duplicate contract name found for $contract_name";
+            return 0;
+        }
     }
 
     # Append the newly created contract to the JSON structure and write it to contracts.json
@@ -176,13 +181,27 @@ my $my_address = <$fh>;
 close $fh || die;
 
 
+# Check that the contract matches that of the file name
+my $basename  = basename("$source_fn");
+$basename     =~ /(.*?)\.([^.]*)$/;
+my $file_ext  = $2;
+my $fn_no_ext = $1;
+
+
 # Precompile source code by replacing keywords with addresses.
+# Also check that the source code contains a contract with name matching the file name
 system("cp $source_fn $precompiled_fn");
 my $file = path($precompiled_fn);
 my $data = $file->slurp_utf8;
 open( $fh, "+<", $source_fn );
 my $old_line = "";
+my $correct_contract_name = 0;
 while( my $line = <$fh> ){
+
+    # Check if the correct contract name is present
+    $correct_contract_name = 1 if $line =~ /contract $fn_no_ext/;
+
+    # Precompile the contract
     chomp $line;
     while ( $line =~ /_address_([^\s,\)\;]*)/ ){
         my ($contract_name, $token_symbol) = split /_/, $1; # token_symbol may be undef
@@ -197,15 +216,12 @@ while( my $line = <$fh> ){
     }
 }
 close( $fh );
+die "No contract name matching file name found in $source_fn. Expecting 'contract $fn_no_ext'." unless $correct_contract_name;
 $file->spew_utf8($data);
 
 
-# Do Check that .sol file names are capitalized and do the actual calculation
+# Do Check that .sol file names are capitalized and do the actual compilation
 # by invoking solc/daggerc.
-my $basename  = basename("$source_fn");
-$basename     =~ /(.*?)\.([^.]*)$/;
-my $file_ext  = $2;
-my $fn_no_ext = $1;
 if ( $file_ext eq "sol" ){
     die "Invalid file name, first letter must be capitalized!" unless $basename =~ /^[[:upper:]]/;
     system("solc -o $outdir --abi --bin --overwrite $precompiled_fn");
