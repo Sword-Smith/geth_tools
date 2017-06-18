@@ -12,34 +12,35 @@ Tools to avoid having to work in the Geth console directly
 # Install
 Currently we support OS X and Linux!
 
-## Prerequisite
+
+
+### Dependencies
 1. Geth (https://github.com/ethereum/go-ethereum/wiki/geth)
-2. DaggerC (https://github.com/Sword-Smith/Daggerc)
-3. solc
+2. solc (https://solidity.readthedocs.io/en/develop/installing-solidity.html)
+
+### Setup
+
+1. Clone repo
+2. Run `initialize_genesis_block.pl`
+3. Run `run_geth.pl`
 
 -- Alternatively run the install_on_linux bash script
 
-To set up geth_tools
-
-1. Clone repo
-2. Run "initialize_genesis_block.pl"
-3. Run "run_geth.pl"
-
 Now a fully configured geth instance should be running.
 
-Solidity and Dagger contracts can now be deployed by running compile_and_deploy.pl
+Solidity and Dagger contracts can now be deployed by running `compile_and_deploy.pl`
 
 # How to use it
 
-Make sure a Geth client is running by starting the program ./run_geth.pl
+Make sure a Geth client is running by starting the program `./run_geth.pl`
 
 Compile and deploy to a local version of the Ethereum blockchain:
-./compile_and_deploy.pl \<outdir\> \<source_code\>
+```./compile_and_deploy.pl <outdir> <source_code_file>```
 
 Run methods on the deployed smart contract:
-./run_code.pl \<outdir\> \<javascript_to_execute\>
+```./run_code.pl <outdir> <javascript_to_execute>```
 
-So a smart contract can be deployed and executed without having to intereact
+So a smart contract can be deployed and executed without having to interact
 with the geth console.
 
 ## JavaScript Code Execution
