@@ -42,6 +42,7 @@ Run methods on the deployed smart contract:
 So a smart contract can be deployed and executed without having to intereact
 with the geth console.
 
+## JavaScript Code Execution
 When writing JavaScript to execute, the deployed smart contracts are
 automatically put into scope. They may be referred to as "<contract_name>\_",
 i.e., the contract name followed by an underscore. If the deployed contract has
@@ -52,3 +53,12 @@ contract is referred to as \<contract_name>\_\<tokenSymbol\> or
 \<contract_name\>\_\<dataFeedSymbol\> in the JavaScript. This is to allow the
 user to interact with several contracts of the same type but with different
 symbols, such as token contracts or data feed contracts.
+
+## Precompiler for Solidity and Dagger
+./deploy_and_compile.pl contains a precompiler. This means that you when
+defining smart contracts can use keywords to access addresses of other smart
+contracts. The keyword "\_address\_my\_" will be substituted with your own
+Ethereum address. The keyword "\_address\_\<contract\_name\>_" will be
+substituted with the address of a contract that you have alread deployed.
+\<contract\>\_\<name\> uses the same naming convention as the JavaScript does,
+as described in the section above.
