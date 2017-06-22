@@ -21,8 +21,11 @@ Currently we support OS X and Linux!
 ### Setup
 
 1. Clone repo
-2. Run `initialize_genesis_block.pl`
-3. Run `run_geth.pl`
+2. Go to geth_tools folder
+3. install cpanminus (`sudo apt-get install cpanminus`)
+4. `cpanm --installdeps .` (remember the dot)
+5. Run `initialize_genesis_block.pl`
+6. Run `run_geth.pl`
 
 -- Alternatively run the install_on_linux bash script
 
