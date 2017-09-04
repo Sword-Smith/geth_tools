@@ -5,19 +5,23 @@ use feature qw(signatures);
 no warnings qw(experimental::signatures);
 use experimental 'smartmatch';
 
-my $genesis_fn = "./testserver_genesis.json";
-my $datadir    = ".ethereum_testserver_data/";
-my $keystore   = "$datadir/keystore";
-my $outdir     = "out/";
+my $genesis_fn    = "./testserver_genesis.json";
+my $datadir       = ".ethereum_testserver_data/";
+my $keystore      = "$datadir/keystore";
+my $outdir        = "out/";
+my $my_address_fn = "my_address";
 
 sub execute ($verbose){
     system("rm -r $datadir");
+    system("rm $my_address_fn");
     say "Creating new genesis block from $genesis_fn:" if $verbose;
     system("geth --datadir $datadir init $genesis_fn");
 
     # Here the Ethereum address is generated
     say "Creating new account:" if $verbose;
-    my $out = system("geth --datadir $datadir --password password.txt account new");
+    for (my $i = 0; $i < 3; $i++) {
+        system("geth --datadir $datadir --password password.txt account new");
+    }
 
     system("rm -rf $outdir");
     system("mkdir $outdir");
@@ -26,12 +30,16 @@ sub execute ($verbose){
     opendir my($dh), $keystore or die "Couldn't open dir '$keystore': $!";
     my @files = grep {$_ ne "." && $_ ne ".."} readdir $dh;
     closedir $dh;
-    die "Wrong number of keys found in '$keystore'. Found " . scalar @files unless scalar @files == 1;
+    die "Wrong number of keys found in '$keystore'. Found " . scalar @files unless scalar @files == 3;
     # Do a regex match on the file name to find the address.
-    my $address_fn = $files[0];
-    $address_fn =~ /([a-f0-9]+)$/ || die "File name not recognized";
-    open( my $fh, ">", "my_address");
-    print $fh "0x$1"; #writes generated Ethereum address to text file my_address
+
+    open( my $fh, ">>", "my_address");
+
+    for my $file (@files) {
+        $file =~ /([a-f0-9]+)$/ || die "File name not recognized";
+        print $fh "0x$1\n"; #writes generated Ethereum address to text file my_address
+    }
+
     close $fh || die "Failed to close";
 }
 

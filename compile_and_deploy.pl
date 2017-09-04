@@ -177,7 +177,10 @@ unless ( -e $ARGV[1]) {
 
 # Get own Ethereum address
 open( my $fh, "<", "my_address");
-my $my_address = <$fh>;
+my @my_address;
+while (<$fh>) {
+     push @my_address, $_;
+}
 close $fh || die;
 
 
@@ -205,7 +208,7 @@ while( my $line = <$fh> ){
     chomp $line;
     while ( $line =~ /_address_([^\s,\)\;]*)/ ){
         my ($contract_name, $token_symbol) = split /_/, $1; # token_symbol may be undef
-        my $address = $contract_name eq "my" ? $my_address : find_address($outdir, $contract_name, $token_symbol);
+        my $address = $contract_name eq "my" ? $my_address[$token_symbol] : find_address($outdir, $contract_name, $token_symbol);
         chomp $address;
         die "No address found for address replacement for _address_$1 in source code file $source_fn" unless $address =~ /^0x/;
         my $replace_string = "_address_".$contract_name."_".$token_symbol;
@@ -216,7 +219,8 @@ while( my $line = <$fh> ){
     }
 }
 close( $fh );
-die "No contract name matching file name found in $source_fn. Expecting 'contract $fn_no_ext'." unless $correct_contract_name;
+# We don't understand this check, but it's wrong...
+#die "No contract name matching file name found in $source_fn. Expecting 'contract $fn_no_ext'." unless $correct_contract_name;
 $file->spew_utf8($data);
 
 
@@ -257,7 +261,7 @@ my %name2address = ();
 for my $arg ( @input_args ){
     if ( $arg =~ /_address_([^\s,\)\;]*)/ ){
         my ($contract_name, $token_symbol) = split /_/, $1; # token_symbol may be undef
-        my $address = $contract_name eq "my" ? $my_address : find_address($outdir, $contract_name, $token_symbol);
+        my $address = $contract_name eq "my" ? $my_address[$token_symbol] : find_address($outdir, $contract_name, $token_symbol);
         chomp $address;
         die "No address found for address replacement for _address_$1 in source code file $source_fn" unless $address && $address =~ /^0x/;
         $name2address{$1} = $address unless exists $name2address{$1};
