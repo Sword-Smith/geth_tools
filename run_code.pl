@@ -79,7 +79,21 @@ open( $fh, ">", $dec_var_fn ) || die;
 print $fh $declarations_string;
 close( $fh ) || die;
 
+# Get own Ethereum address
+open( my $fh, "<", "my_address");
+my @my_address;
+while (<$fh>) {
+     push @my_address, $_;
+}
+close $fh || die;
+
+my $unlock_string;
+
+for (my $i = 0; $i < scalar @my_address; $i++) {
+    $unlock_string .= "personal.unlockAccount(web3.eth.accounts[$i], '$password');";
+}
+
 my $commands_fn = $ARGV[1]; # Contains the actual code (besides the var decls) to run
-my $exec_output = `geth --exec "personal.unlockAccount(web3.eth.accounts[0], '$password'); loadScript('$dec_var_fn'); loadScript('$commands_fn');" attach $ipcpath`;
+my $exec_output = `geth --exec "$unlock_string loadScript('$dec_var_fn'); loadScript('$commands_fn');" attach $ipcpath`;
 
 say "output from executing JavaScript in Geth is: $exec_output";
