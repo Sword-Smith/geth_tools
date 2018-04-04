@@ -10,6 +10,7 @@ my $datadir       = ".ethereum_testserver_data/";
 my $keystore      = "$datadir/keystore";
 my $outdir        = "out/";
 my $my_address_fn = "my_address";
+my $num_addresses = 3;
 
 sub execute ($verbose){
     system("rm -r $datadir");
@@ -19,30 +20,29 @@ sub execute ($verbose){
 
     # Here the Ethereum address is generated
     say "Creating new account:" if $verbose;
-    for (my $i = 0; $i < 3; $i++) {
+    for (my $i = 0; $i < $num_addresses; $i++) {
         system("geth --datadir $datadir --password password.txt account new");
     }
 
     system("rm -rf $outdir");
     system("mkdir $outdir");
 
-    # Find address and write it to text file my_address
+    # Check that $num_addresses have been created in $keystore directory
     opendir my($dh), $keystore or die "Couldn't open dir '$keystore': $!";
     my @files = grep {$_ ne "." && $_ ne ".."} readdir $dh;
     closedir $dh;
-    die "Wrong number of keys found in '$keystore'. Found " . scalar @files unless scalar @files == 3;
-    # Do a regex match on the file name to find the address.
+    die "Wrong number of keys found in '$keystore'. Found " . scalar @files unless scalar @files == $num_addresses;
 
+    # Get the generated addresses from the geth client
+    # and store them in my_address file
+    my $var = `geth --datadir .ethereum_testserver_data/ account list`;
+    my @list = split /\n/, $var;
+    die 'bad number of addresses found' unless scalar @list == $num_addresses;
     open( my $fh, ">>", "my_address");
-
-    # Sorting this list ensures that the file that the addresses
-    # are stored in the order they were created and that the 0th
-    # element in the generated file is also the std. address
-    # TODO:
-    # If anybody comes up with a better solution please implement it!
-    for my $file (sort @files) {
-        $file =~ /([a-f0-9]+)$/ || die "File name not recognized";
-        print $fh "0x$1\n"; #writes generated Ethereum address to text file my_address
+    foreach my $line (@list){
+        $line =~ /Account #\d+: \{([0-9a-f]*)/;
+        die 'Bad length of address, must be 40 chars long.' unless length($1) == 40;
+        print $fh "0x$1\n";
     }
 
     close $fh || die "Failed to close";
