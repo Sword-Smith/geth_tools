@@ -35,7 +35,12 @@ sub execute ($verbose){
 
     open( my $fh, ">>", "my_address");
 
-    for my $file (@files) {
+    # Sorting this list ensures that the file that the addresses
+    # are stored in the order they were created and that the 0th
+    # element in the generated file is also the std. address
+    # TODO:
+    # If anybody comes up with a better solution please implement it!
+    for my $file (sort @files) {
         $file =~ /([a-f0-9]+)$/ || die "File name not recognized";
         print $fh "0x$1\n"; #writes generated Ethereum address to text file my_address
     }
