@@ -1,0 +1,7 @@
+translate(now,
+    scale(
+        100,
+        obs(int, _address_DataFeed0_, 42),
+        transfer( _address_Tmc4_A, _address_my_, 0x0123456789012345678901234567890123456789)
+    )
+)
