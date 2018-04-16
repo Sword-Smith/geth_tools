@@ -30,7 +30,7 @@ while(t0_B.blockNumber === null){
 
 // Now set a value for the data feed contract
 console.log('Set observable value');
-var df = DataFeed0_.set( 0, 100, {from: me, gas: 3000000} );
+var df = DataFeed0_.set( 0, 501, {from: me, gas: 3000000} );
 var tdf = web3.eth.getTransaction(df);
 while(tdf.blockNumber === null){
     tdf = web3.eth.getTransaction(df);
