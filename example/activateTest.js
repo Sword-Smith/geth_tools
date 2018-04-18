@@ -2,8 +2,6 @@ web3.eth.defaultAccount = web3.eth.accounts[0];
 me = web3.eth.defaultAccount;
 other = web3.eth.accounts[1];
 
-console.log("Before assert");
-
 function formatError(actual, expected, reason) {
         throw "\nActual: " + actual.toString() +
               "\nExpected: " + expected.toString() +
@@ -22,9 +20,9 @@ function assertNotEquals(actual, expected, reason) {
     }
 }
 
-console.log("After assert");
-
 var dataFeedValue = 43;
+var EPAddress = EuropeanOption_.address;
+var valueBeforeActivate = Tmc4_DKK.balanceOf(me);
 
 // Set data feed value
 console.log("Now setting data feed value to 43");
@@ -33,10 +31,6 @@ var t1 = web3.eth.getTransaction(df);
 while(t1.blockNumber === null){
     t1 = web3.eth.getTransaction(df);
 }
-
-EPAddress = EuropeanOption_.address;
-console.log("My address is: " + me);
-console.log("European option address is: " + EPAddress);
 
 console.log("********* BEFORE EXECUTION OF EUROPEAN OPTION *********");
 var balance_A = Tmc4_DKK.balanceOf(me);
@@ -51,6 +45,7 @@ var t0_A = web3.eth.getTransaction(b_A);
 while(t0_A.blockNumber === null){
     t0_A = web3.eth.getTransaction(b_A);
 }
+
 // TODO: Assert return value!
 
 
@@ -64,14 +59,14 @@ while(tcs.blockNumber === null){
 
 //TODO: Assert return value!
 
-//Call approve with an insufficient amount and call active
-//Confirm failure
-// console.log('Now calling "approve" on the token contract DKK');
-// b_A = Tmc4_DKK.approve( EPAddress, 10, {from: me, gas: 3000000} );
-// t0_A = web3.eth.getTransaction(b_A);
-// while(t0_A.blockNumber === null){
-//     t0_A = web3.eth.getTransaction(b_A);
-// }
+// Call approve with an insufficient amount and call active
+// Confirm failure
+console.log('Now calling "approve" on the token contract DKK');
+b_A = Tmc4_DKK.approve( EPAddress, 10, {from: me, gas: 3000000} );
+t0_A = web3.eth.getTransaction(b_A);
+while(t0_A.blockNumber === null){
+    t0_A = web3.eth.getTransaction(b_A);
+}
 
 //Call to activate
 b_A = EuropeanOption_.activate({from: me, gas: 3000000});
@@ -104,9 +99,21 @@ tcs = web3.eth.getTransaction(cs);
 while(tcs.blockNumber === null){
     tcs = web3.eth.getTransaction(cs);
 }
+
 // TODO: Assert return value
 
-var valueBeforeActivate = Tmc4_DKK.balanceOf(me);
+assertEquals(
+    Tmc4_DKK.balanceOf(EPAddress),
+    0,
+    "\nReason: Check DC balance before activate.");
+assertEquals(
+    Tmc4_DKK.balanceOf(other),
+    0,
+    "\nReason: Check other balance before activate.");
+// assertEquals(
+//     Tmc4_DKK.balanceOf(me),
+//     valueBeforeActivate,
+//     "\nReason: Check own balance before activate.");
 
 // Call to activate
 b_A = EuropeanOption_.activate({from: me, gas: 3000000});
@@ -138,11 +145,11 @@ while(tcs.blockNumber === null){
 
 // TODO: Assert ret val
 
-// Assert that the right amount was sent back to me after execute
-// assertEquals(
-//     Tmc4_DKK.balanceOf(me),
-//     valueBeforeActivate - dataFeedValue,
-//     "\nReason: Check my balance after execute");
+//Assert that the right amount was sent back to me after execute
+assertEquals(
+    Tmc4_DKK.balanceOf(me),
+    valueBeforeActivate - dataFeedValue,
+    "\nReason: Check my balance after execute");
 
 // Assert that DC has no money left
 assertEquals(
@@ -150,6 +157,7 @@ assertEquals(
     0,
     "\nReason: Check DC balance after execute");
 
+// Assert that recipient has received the correct amount
 assertEquals(
     Tmc4_DKK.balanceOf(other),
     dataFeedValue,
@@ -162,5 +170,28 @@ tcs = web3.eth.getTransaction(cs);
 while(tcs.blockNumber === null){
     tcs = web3.eth.getTransaction(cs);
 }
+
+//Assert that no changes has occured after repeated execute
+assertEquals(
+    Tmc4_DKK.balanceOf(me),
+    valueBeforeActivate - dataFeedValue,
+    "\nReason: Check my balance after execute");
+
+assertEquals(
+    Tmc4_DKK.balanceOf(EPAddress),
+    0,
+    "\nReason: Check DC balance after execute");
+
+assertEquals(
+    Tmc4_DKK.balanceOf(other),
+    dataFeedValue,
+    "\nReason: Check other balance after execute");
+
+console.log("Test completed with no errors.\n\n");
+
+console.log("Printing balances:\n");
+console.log("My balance: " + Tmc4_DKK.balanceOf(me));
+console.log("Other balance: " + Tmc4_DKK.balanceOf(other));
+console.log("DC balance: " + Tmc4_DKK.balanceOf(EPAddress));
 
 // TODO: Assert ret val
