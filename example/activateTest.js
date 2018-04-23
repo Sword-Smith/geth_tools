@@ -22,7 +22,7 @@ function assertNotEquals(actual, expected, reason) {
 
 var dataFeedValue = 43;
 var EPAddress = EuropeanOption_.address;
-var valueBeforeActivate = Tmc4_DKK.balanceOf(me);
+var valueBeforeActivate = Erc20_DKK.balanceOf(me);
 
 // Set data feed value
 console.log("Now setting data feed value to 43");
@@ -33,9 +33,9 @@ while(t1.blockNumber === null){
 }
 
 console.log("********* BEFORE EXECUTION OF EUROPEAN OPTION *********");
-var balance_A = Tmc4_DKK.balanceOf(me);
+var balance_A = Erc20_DKK.balanceOf(me);
 console.log("My balance on token contract DKK is: " + balance_A);
-balance_A = Tmc4_DKK.balanceOf(other);
+balance_A = Erc20_DKK.balanceOf(other);
 console.log("Other balance on token contract DKK is: " + balance_A);
 
 // Call to activate without approval of money
@@ -61,8 +61,8 @@ while(tcs.blockNumber === null){
 
 // Call approve with an insufficient amount and call active
 // Confirm failure
-console.log('Now calling "approve" on the token contract DKK');
-b_A = Tmc4_DKK.approve( EPAddress, 10, {from: me, gas: 3000000} );
+console.log("Call approve with insufficient amount and attempt to activate contract.");
+b_A = Erc20_DKK.approve( EPAddress, 10, {from: me, gas: 3000000} );
 t0_A = web3.eth.getTransaction(b_A);
 while(t0_A.blockNumber === null){
     t0_A = web3.eth.getTransaction(b_A);
@@ -81,14 +81,15 @@ var validApproveAmount = 100;
 
 // Approve with sufficient amount and activate
 // Confirm successful return value and that money has been moved to DC.
-b_A = Tmc4_DKK.approve( EPAddress, validApproveAmount, {from: me, gas: 3000000} );
+console.log("Call approve with sufficient amount and attempt to activate contract.");
+b_A = Erc20_DKK.approve( EPAddress, validApproveAmount, {from: me, gas: 3000000} );
 t0_A = web3.eth.getTransaction(b_A);
 while(t0_A.blockNumber === null){
     t0_A = web3.eth.getTransaction(b_A);
 }
 
 assertEquals(
-    Tmc4_DKK.allowance(me, EPAddress),
+    Erc20_DKK.allowance(me, EPAddress),
     validApproveAmount,
     "\nReason: Check allowance after correct approve call..");
 
@@ -103,15 +104,15 @@ while(tcs.blockNumber === null){
 // TODO: Assert return value
 
 assertEquals(
-    Tmc4_DKK.balanceOf(EPAddress),
+    Erc20_DKK.balanceOf(EPAddress),
     0,
     "\nReason: Check DC balance before activate.");
 assertEquals(
-    Tmc4_DKK.balanceOf(other),
+    Erc20_DKK.balanceOf(other),
     0,
     "\nReason: Check other balance before activate.");
 // assertEquals(
-//     Tmc4_DKK.balanceOf(me),
+//     Erc20_DKK.balanceOf(me),
 //     valueBeforeActivate,
 //     "\nReason: Check own balance before activate.");
 
@@ -123,7 +124,7 @@ while(t0_A.blockNumber === null){
 }
 
 assertEquals(
-    Tmc4_DKK.balanceOf(EPAddress),
+    Erc20_DKK.balanceOf(EPAddress),
     validApproveAmount,
     "\nReason: Check DC balance after approve and activate.");
 
@@ -132,7 +133,7 @@ assertEquals(
 // Assert that the money has been moved from me to DC
 // Check my balance change
 assertEquals(
-    Tmc4_DKK.balanceOf(me),
+    Erc20_DKK.balanceOf(me),
     valueBeforeActivate - validApproveAmount,
     "\nReason: Check my balance after activate");
 
@@ -147,19 +148,19 @@ while(tcs.blockNumber === null){
 
 //Assert that the right amount was sent back to me after execute
 assertEquals(
-    Tmc4_DKK.balanceOf(me),
+    Erc20_DKK.balanceOf(me),
     valueBeforeActivate - dataFeedValue,
     "\nReason: Check my balance after execute");
 
 // Assert that DC has no money left
 assertEquals(
-    Tmc4_DKK.balanceOf(EPAddress),
+    Erc20_DKK.balanceOf(EPAddress),
     0,
     "\nReason: Check DC balance after execute");
 
 // Assert that recipient has received the correct amount
 assertEquals(
-    Tmc4_DKK.balanceOf(other),
+    Erc20_DKK.balanceOf(other),
     dataFeedValue,
     "\nReason: Check other balance after execute");
 
@@ -173,25 +174,25 @@ while(tcs.blockNumber === null){
 
 //Assert that no changes has occured after repeated execute
 assertEquals(
-    Tmc4_DKK.balanceOf(me),
+    Erc20_DKK.balanceOf(me),
     valueBeforeActivate - dataFeedValue,
     "\nReason: Check my balance after execute");
 
 assertEquals(
-    Tmc4_DKK.balanceOf(EPAddress),
+    Erc20_DKK.balanceOf(EPAddress),
     0,
     "\nReason: Check DC balance after execute");
 
 assertEquals(
-    Tmc4_DKK.balanceOf(other),
+    Erc20_DKK.balanceOf(other),
     dataFeedValue,
     "\nReason: Check other balance after execute");
 
 console.log("Test completed with no errors.\n\n");
 
 console.log("Printing balances:\n");
-console.log("My balance: " + Tmc4_DKK.balanceOf(me));
-console.log("Other balance: " + Tmc4_DKK.balanceOf(other));
-console.log("DC balance: " + Tmc4_DKK.balanceOf(EPAddress));
+console.log("My balance: " + Erc20_DKK.balanceOf(me));
+console.log("Other balance: " + Erc20_DKK.balanceOf(other));
+console.log("DC balance: " + Erc20_DKK.balanceOf(EPAddress));
 
 // TODO: Assert ret val

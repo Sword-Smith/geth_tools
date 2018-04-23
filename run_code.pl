@@ -23,7 +23,7 @@ sub get_deployed_contracts( $dir ) {
     my @contracts = $json->@*;
     my @parsed_contracts;
     for my $contract (@contracts){
-        my ($token_arg) = grep { $_->{name} eq "tokenSymbol" } $contract->{args}->@*;
+        my ($token_arg) = grep { $_->{name} eq "tokenSymbol" || $_->{name} eq "_tokenSymbol" } $contract->{args}->@*;
         my $token_symbol = $token_arg->{value};
         my $parsed_contract = {
             name        => $contract->{name},
