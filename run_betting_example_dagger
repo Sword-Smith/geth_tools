@@ -1,0 +1,7 @@
+#!/bin/bash
+
+rm -f out/contracts.json
+./compile_and_deploy.pl out/ example/Erc20.sol "'DKK'" "'DKK'" 0 1000000
+./compile_and_deploy.pl out/ example/DataFeed0.sol
+./compile_and_deploy.pl out/ example/BettingExample2.dag
+./run_code.pl out example/bettingTest.js
