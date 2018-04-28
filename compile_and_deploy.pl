@@ -15,6 +15,7 @@ use JSON;
 use JSON::Parse qw(parse_json);
 use Path::Tiny qw(path); # To get slurp for writing to file
 use Scalar::Util qw(looks_like_number);
+use Term::ANSIColor;
 
 sub usage(){
     die "Usage: compile <outdir> <source file> [arg0 of constructor] [arg1 of constructor] ...";
@@ -339,11 +340,16 @@ my $ret = store_contract_info_to_json( $abi_source, $contract_address, $fn_no_ex
 
 # Indicate if program has been executed succesfully
 if ( $ret ){
-    say "SUCCESS! Contract $source_fn deployed and placed on address $contract_address.";
+    print color("green");
+    say "SUCCESS! Contract $source_fn deployed and placed on address $contract_address.\n";
+    print color("reset");
     # Remove the precompiled file
     system("rm $precompiled_fn");
 
     # If the deployment failed, the precompiled file is not removed since it may help with debugging
 } else {
-    die "FAILURE! Something went wrong. Contract $source_fn was not deployed.";
+    print color("red");
+    say "FAILURE! Something went wrong. Contract $source_fn was not deployed.";
+    print color("reset");
+    die;
 }
