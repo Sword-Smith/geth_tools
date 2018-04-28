@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if [ -f out/contracts.json ]
+then
+    rm out/contracts.json
+fi
 ./compile_and_deploy.pl out/ example/Erc20.sol "'DKK'" "'DKK'" 0 1000000
 ./compile_and_deploy.pl out/ example/Erc20.sol "'B'" "'B'" 0 10
 ./compile_and_deploy.pl out/ example/DataFeed0.sol

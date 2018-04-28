@@ -1,0 +1,22 @@
+if 1*1 > 1 within seconds(1) then
+  if 2*2 > 2 within seconds(2) then
+    if 3*3 > 3 within seconds(3) then
+      transfer(_address_Erc20_1,_address_my_1,_address_my_0)
+    else
+      transfer(_address_Erc20_2,_address_my_2,_address_my_0)
+  else
+    if 4*4 > 4 within seconds(4) then
+      if 5*5 > 5 within seconds(5) then
+        transfer(_address_Erc20_3,_address_my_3,_address_my_0)
+      else
+        transfer(_address_Erc20_4,_address_my_4,_address_my_0)
+    else
+      transfer(_address_Erc20_5,_address_my_5,_address_my_0)
+else
+  if 6*6 > 6 within seconds(6) then
+    transfer(_address_Erc20_6,_address_my_6,_address_my_0)
+  else
+    if 7*7 > 7 within seconds(7) then
+      transfer(_address_Erc20_7,_address_my_7,_address_my_0)
+    else
+      transfer(_address_Erc20_8,_address_my_8,_address_my_0)
