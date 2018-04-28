@@ -1,0 +1,12 @@
+both(
+     scale(
+           10000,
+           if (obs(bool, _address_DataFeed0_, 0)) then 10000 else 0,
+           transfer( _address_Erc20_DKK, _address_my_0, _address_my_1)
+           ),
+     scale(
+           10000,
+           if (obs(bool, _address_DataFeed0_, 0)) then 0 else 10000,
+           transfer( _address_Erc20_DKK, _address_my_1, _address_my_0)
+           )
+     )

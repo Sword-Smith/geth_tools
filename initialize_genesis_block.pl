@@ -10,7 +10,7 @@ my $datadir       = ".ethereum_testserver_data/";
 my $keystore      = "$datadir/keystore";
 my $outdir        = "out/";
 my $my_address_fn = "my_address";
-my $num_addresses = 3;
+my $num_addresses = 10;
 
 sub execute ($verbose){
     system("rm -r $datadir");

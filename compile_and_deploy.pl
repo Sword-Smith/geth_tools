@@ -44,7 +44,7 @@ sub find_address( $dir, $contract_name, $token_symbol ){
     for my $contract ( @contracts ){
         die qq(Multiple contracts with name "$contract_name" found in contracts.json but no constructor arguments found) unless $contract->{args};
         my @args = $contract->{args}->@*;
-        @args = grep { $_->{name} ~~ [qw(tokenSymbol dataFeedSymbol)] } @args;
+        @args = grep { $_->{name} ~~ [qw(tokenSymbol dataFeedSymbol _tokenSymbol _dataFeedSymbol)] } @args;
         die "Neither tokenSymbol nor dataFeedSymbol value found in args for $contract_name" unless @args;
         die "More than one key matching either tokenSymbol or dataFeedSymbol in $contract_name" if scalar @args > 1;
         return $contract->{address} if $args[0]->{value} eq $token_symbol;
@@ -113,7 +113,7 @@ sub store_contract_info_to_json( $abi_source, $contract_address, $contract_name,
                 }
 
                 # Check that name duplication does not occur
-                if ( $constr_arg->{name} ~~ [qw( tokenSymbol dataFeedSymbol )] ){
+                if ( $constr_arg->{name} ~~ [qw( tokenSymbol dataFeedSymbol _tokenSymbol _dataFeedSymbol )] ){
                     if ( my @same_name_contracts =  grep { $_->{name} eq $contract_name } $contracts_json->@* ){
                         for my $potential_duplicate_contract ( @same_name_contracts ){
                             my @pot_dup_contr_args = $potential_duplicate_contract->{args}->@*;
@@ -139,7 +139,7 @@ sub store_contract_info_to_json( $abi_source, $contract_address, $contract_name,
             say "Duplicate contract name found for $contract_name!";
             return 0;
         }
-        if ( !grep { $_->{name} ~~ [qw( tokenSymbol dataFeedSymbol )] } $contracts_w_same_name[0]->{args}->@* ){
+        if ( !grep { $_->{name} ~~ [qw( tokenSymbol dataFeedSymbol _tokenSymbol _dataFeedSymbol )] } $contracts_w_same_name[0]->{args}->@* ){
             say "Duplicate contract name found for $contract_name";
             return 0;
         }

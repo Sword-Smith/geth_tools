@@ -66,8 +66,8 @@ contract Tmc4 {
         * this becomes imutable to protect against the msg.sender later can lessen the amount.
         * For Tmc4, a specific DC contract can only record the approval of access to ONE account.
         */
-        if (spenderToApproval[_spender].senderAddress != address(0x0)) return false;
-        if (spenderToApproval[_spender].senderAddress == msg.sender) return false;
+        //if (spenderToApproval[_spender].senderAddress != address(0x0)) return false;
+        //if (spenderToApproval[_spender].senderAddress == msg.sender) return false;
         if (totalLockedAmount[msg.sender] + _value > balanceOf[msg.sender]) return false;
         spenderToApproval[_spender] = Approval(msg.sender, _value);
         totalLockedAmount[msg.sender] += _value;
