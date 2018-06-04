@@ -1,0 +1,8 @@
+#!/bin/bash
+
+[ -f out/contracts.json ] && rm -f out/contracts.js
+
+./compile_and_deploy.pl out/ example/Erc20.sol "'DKK'" "'DKK'" 0 1000000
+./compile_and_deploy.pl out/ example/SimpleTransfer.dag
+./run_code.pl out example/SimpleTransfer.js
+
