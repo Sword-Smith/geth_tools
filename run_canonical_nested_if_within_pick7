@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# deploy eight tokens
+if [ -f out/contracts.json ]
+then
+    rm out/contracts.json
+fi
+./compile_and_deploy.pl out/ example/Erc20.sol "'1'" "'1'" 0 1000000
+./compile_and_deploy.pl out/ example/Erc20.sol "'2'" "'2'" 0 1000000
+./compile_and_deploy.pl out/ example/Erc20.sol "'3'" "'3'" 0 1000000
+./compile_and_deploy.pl out/ example/Erc20.sol "'4'" "'4'" 0 1000000
+./compile_and_deploy.pl out/ example/Erc20.sol "'5'" "'5'" 0 1000000
+./compile_and_deploy.pl out/ example/Erc20.sol "'6'" "'6'" 0 1000000
+./compile_and_deploy.pl out/ example/Erc20.sol "'7'" "'7'" 0 1000000
+./compile_and_deploy.pl out/ example/Erc20.sol "'8'" "'8'" 0 1000000
+./compile_and_deploy.pl out/ example/CanonicalNestedDCPick7.dag
+./run_code.pl out example/CanonicalNestedScript0Pick7.js
