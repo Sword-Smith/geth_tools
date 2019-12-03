@@ -23,4 +23,4 @@ if ( $system_platform eq "Linux" ){
 
 # Open geth and mine, pipe output to /out/error.log
 system("mkdir -p out");
-system("geth --fast --cache 512 --ipcpath $ipcpath --networkid 42 --port 30301 --rpc --rpcport 30302 --rpcaddr localhost --rpccorsdomain '*' --rpcapi 'eth,net,web3' --datadir ./.ethereum_testserver_data --jspath ./scripts/ --mine --minerthreads=1 console 2>> ./out/error.log");
+system("geth --cache 512 --ipcpath $ipcpath --networkid 42 --port 30301 --rpc --rpcport 30302 --rpcaddr localhost --rpccorsdomain '*' --rpcapi 'eth,net,web3' --datadir ./.ethereum_testserver_data --jspath ./scripts/ --mine --minerthreads=1 console 2>> ./out/error.log");
