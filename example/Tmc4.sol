@@ -1,4 +1,4 @@
-pragma solidity ^0.4.9;
+pragma solidity >=0.4.9;
 contract Tmc4 {
 
     struct Approval {
@@ -20,7 +20,7 @@ contract Tmc4 {
     event ApprovalEvent(address indexed _owner, address indexed _spender, uint256 _value);
 
     /* Initializes contract with initial supply tokens to the creator of the contract */
-    function Tmc4(uint256 initialSupply, string tokenName, uint8 decimalUnits, string tokenSymbol) {
+    constructor(uint256 initialSupply, string memory tokenName, uint8 decimalUnits, string memory tokenSymbol) public {
         balanceOf[msg.sender] = initialSupply; // Give the creator all initial tokens
         name = tokenName;
         symbol = tokenSymbol;
@@ -29,7 +29,7 @@ contract Tmc4 {
     }
 
     /* Send coins */
-    function transfer(address _to, uint256 _value) returns (bool success) {
+    function transfer(address _to, uint256 _value) public returns (bool success) {
         if (balanceOf[msg.sender] - totalLockedAmount[msg.sender] < _value) return false; // Check if the sender has enough
         if (balanceOf[_to] + _value < balanceOf[_to]) return false; // Check for overflows
         balanceOf[msg.sender] -= _value;                            // Subtract from the sender
@@ -39,7 +39,7 @@ contract Tmc4 {
     }
 
     /* send coins on behalf of other accounts */
-    function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
+    function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         bool legalRequest = false;
 
         if (spenderToApproval[msg.sender].senderAddress == _from){
@@ -60,7 +60,7 @@ contract Tmc4 {
     /* The method does not guarantee that the _value amount is present in the msg.sender balance */
     // DEVFIX: But it should make that check.
     // We need the totalLockedAmount to make that check!
-    function approve(address _spender, uint256 _value) returns (bool success) {
+    function approve(address _spender, uint256 _value) public returns (bool success) {
         /*
         * If the msg.sender has already allowed to send a value by _spender,
         * this becomes imutable to protect against the msg.sender later can lessen the amount.
@@ -76,7 +76,7 @@ contract Tmc4 {
     }
 
     /* Cancels the approval. Only the approved account (e.g. a deriv. contract) can do this*/
-    function releaseApproval(address _cancelAddress) returns (bool success) {
+    function releaseApproval(address _cancelAddress) public returns (bool success) {
         if (spenderToApproval[msg.sender].senderAddress == _cancelAddress){
             totalLockedAmount[_cancelAddress] -= spenderToApproval[msg.sender].senderAllowance;
             delete spenderToApproval[msg.sender];
@@ -85,7 +85,7 @@ contract Tmc4 {
         return false;
     }
 
-    function allowance(address _owner, address _spender) constant returns (uint256 remaining) {
+    function allowance(address _owner, address _spender) public view returns (uint256 remaining) {
         if (spenderToApproval[_spender].senderAddress == _owner){
           return spenderToApproval[_spender].senderAllowance;
         }

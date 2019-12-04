@@ -4,10 +4,11 @@
         "homesteadBlock": 0,
 	"eip150Block": 0,
         "eip155Block": 0,
-        "eip158Block": 0
+        "eip158Block": 0,
+	"byzantiumBlock": 0
     },
-    "difficulty": "1",
-    "gasLimit": "21000000",
+    "difficulty": "200",
+    "gasLimit": "8000000000",
     "etherbase": "0x3333333333333333333333333333333333333333",
     "alloc": {
         "7df9a875a174b3bc565e6424a0050ebc1b2d1d82": { "balance": "300000" },

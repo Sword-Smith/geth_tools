@@ -286,7 +286,8 @@ $precompiled_args_string .= ", " if @precompiled_args;
 my $filter_out_string = "Javascript message: ";
 my $js_code = <<"EOF";
 var contractObject = web3.eth.contract($abi_source);
-var gas = web3.eth.estimateGas({data: '$bin' })*5;
+console.log("$filter_out_string Own account to receive funds: " + web3.eth.accounts[0]);
+var gas = 40000000; // 40m
 var submittedContract = contractObject.new($precompiled_args_string {from:web3.eth.accounts[0], data:'$bin', gas: gas}, function(e, contract){
     if(!e){
         if (!contract.address){
@@ -294,6 +295,8 @@ var submittedContract = contractObject.new($precompiled_args_string {from:web3.e
         }
     }
 });
+console.log("Deploying $source_fn with arguments: $precompiled_args_string. gas: ", gas);
+console.log("Found hash: ", submittedContract.transactionHash);
 var t=web3.eth.getTransaction(submittedContract.transactionHash);
 while( t === null || t.blockNumber === null  ){
     t=web3.eth.getTransaction(submittedContract.transactionHash);
@@ -306,7 +309,7 @@ if (rcpt.contractAddress && web3.eth.getCode(rcpt.contractAddress) != '0x'){
     console.log(rcpt.contractAddress);
     console.log('$filter_out_string Gas used: ' + rcpt.gasUsed);
 } else {
-    console.log('Contract address not found. Something went wrong. Perhaps too little gas.')
+    console.log('Contract address not found. Something went wrong. Perhaps too little gas?');
 }
 EOF
 
