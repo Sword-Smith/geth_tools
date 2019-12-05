@@ -370,6 +370,7 @@ if ( $ret ){
     say "SUCCESS! Contract $source_fn deployed and placed on address $contract_address.\n";
     print color("reset");
     # Remove the precompiled file
+    # For debugging, keep the precompiled file as it may contain clues about the problem
     system("rm $precompiled_fn");
 
     # If the deployment failed, the precompiled file is not removed since it may help with debugging
