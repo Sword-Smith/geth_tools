@@ -27,22 +27,17 @@ function printBalances() {
     console.log("Other balance on token contract CHF is: " + other_balance);
     var betting_balance = Erc20_CHF.balanceOf(BettingAddress);
     console.log("Derivative contract balance on token contract CHF is: " + betting_balance);
-    console.log("\n\n");
 }
 
 function assertEquals(actual, expected, reason) {
     if (actual !== expected) {
         formatError(actual, expected, reason);
-    } else {
-        console.log(reason + " ... OK");
     }
 }
 
 function assertNotEquals(actual, expected, reason) {
     if (actual === expected) {
         formatError(actual, expected, reason);
-    } else {
-        console.log(reason + " ... OK");
     }
 }
 
@@ -60,7 +55,6 @@ function sleep(ms) {
     while(curDate-date < ms);
 }
 
-console.log("Setting data feed to " + dataFeedValue);
 var df = DataFeed0_.set( 0, dataFeedValue, {from: me, gas: 3000000});
 var t1 = web3.eth.getTransaction(df);
 while(t1.blockNumber === null){
@@ -71,15 +65,12 @@ console.log("\n\n\n********* Before bet *********");
 printBalances();
 
 var validApproveAmount = 10000;
-console.log("Approve with sufficient amount, " + validApproveAmount);
 
 b_A = Erc20_CHF.approve( BettingAddress, validApproveAmount, {from: me, gas: 3000000} );
 t0_A = web3.eth.getTransaction(b_A);
 while(t0_A.blockNumber === null){
     t0_A = web3.eth.getTransaction(b_A);
 }
-console.log("Done approving.")
-
 assertEquals(
     Erc20_CHF.allowance(me, BettingAddress).toNumber(),
     validApproveAmount,
