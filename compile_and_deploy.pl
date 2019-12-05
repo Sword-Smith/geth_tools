@@ -326,7 +326,7 @@ close( $fh ) || die;
 
 
 # Run the produced Javascript in Geth and store the output in $op
-my $geth_output = `geth --exec "personal.unlockAccount(web3.eth.accounts[0], '$password'); loadScript('$js_fn');" attach $ipcpath`;
+my $geth_output = `geth --exec "loadScript('$js_fn');" attach $ipcpath`;
 say "output from Geth execution:\n$geth_output";
 
 

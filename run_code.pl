@@ -90,13 +90,7 @@ while (<$fh>) {
 }
 close $fh || die;
 
-my $unlock_string;
-
-for (my $i = 0; $i < scalar @my_address; $i++) {
-    $unlock_string .= "personal.unlockAccount(web3.eth.accounts[$i], '$password');";
-}
-
 my $commands_fn = $ARGV[1]; # Contains the actual code (besides the var decls) to run
-my $exec_output = `geth --exec "$unlock_string loadScript('$dec_var_fn'); loadScript('$commands_fn');" attach $ipcpath`;
+my $exec_output = `geth --exec "loadScript('$dec_var_fn'); loadScript('$commands_fn');" attach $ipcpath`;
 
 say "output from executing JavaScript in Geth is:\n $exec_output";
