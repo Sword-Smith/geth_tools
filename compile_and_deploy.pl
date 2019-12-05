@@ -287,22 +287,20 @@ my $filter_out_string = "Javascript message: ";
 my $js_code = <<"EOF";
 var contractObject = web3.eth.contract($abi_source);
 console.log("$filter_out_string Own account to receive funds: " + web3.eth.accounts[0]);
-var gas = 40000000; // 40m
-var submittedContract = contractObject.new($precompiled_args_string {from:web3.eth.accounts[0], data:'$bin', gas: gas}, function(e, contract){
+var submittedContract = contractObject.new($precompiled_args_string {from:web3.eth.accounts[0], data:'$bin'}, function(e, contract){
     if(!e){
         if (!contract.address){
             console.log('$filter_out_string Contract transaction sent: TransactionHash: ' + contract.transactionHash + ' waiting to be mined ...');
         }
     }
 });
-console.log("Deploying $source_fn with arguments: $precompiled_args_string. gas: ", gas);
+console.log("Deploying $source_fn with arguments: $precompiled_args_string.");
 console.log("Found hash: ", submittedContract.transactionHash);
 var t=web3.eth.getTransaction(submittedContract.transactionHash);
 while( t === null || t.blockNumber === null  ){
     t=web3.eth.getTransaction(submittedContract.transactionHash);
 }
 console.log('$filter_out_string Transaction included in block ' + t.blockNumber );
-console.log('$filter_out_string Gas provided: ' + gas);
 var rcpt = eth.getTransactionReceipt(submittedContract.transactionHash);
 if (rcpt.contractAddress && web3.eth.getCode(rcpt.contractAddress) != '0x'){
     console.log('$filter_out_string Contract created on address:');
