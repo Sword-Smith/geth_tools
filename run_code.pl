@@ -54,12 +54,6 @@ if ( scalar @ARGV < $required_arguments_offset ){
     die "Usage: run_code <outdir> <file to execute>";
 }
 
-# Load password
-open( my $fh, "<", $password_fn ) || die;
-my $password = <$fh>;
-chomp $password;
-close( $fh ) || die;
-
 # Set ipcpath
 my $home = File::HomeDir->my_home();
 my $ipcpath;
@@ -78,12 +72,12 @@ my $declarations_string = create_decs_to_add_vars_to_scope( $outdir, $deployed_c
 # Write the variable declaration string to a JS file
 system("mkdir -p $outdir/generated_js/");
 my $dec_var_fn = "$outdir/generated_js/dec_var.js"; # Is overwrited each run which is fine
-open( $fh, ">", $dec_var_fn ) || die;
+open(my $fh, ">", $dec_var_fn ) || die;
 print $fh $declarations_string;
 close( $fh ) || die;
 
 # Get own Ethereum address
-open( my $fh, "<", "my_address");
+open( $fh, "<", "my_address");
 my @my_address;
 while (<$fh>) {
      push @my_address, $_;

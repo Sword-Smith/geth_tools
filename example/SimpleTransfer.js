@@ -30,6 +30,7 @@ function sleep(ms) {
 
 var SimpleTransferAddress = SimpleTransfer_.address;
 console.log("My address is: " + me);
+console.log("Other address is: " + other);
 console.log("SimpleTransfer address is: " + SimpleTransferAddress);
 
 console.log("********* BEFORE EXECUTION OF TIME TEST *********");

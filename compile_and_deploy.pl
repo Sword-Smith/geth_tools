@@ -177,6 +177,31 @@ unless ( -e $ARGV[1]) {
     die "Source file $ARGV[1] was not found.";
 }
 
+# Create more account if needed
+my $js_create_more_accounts = <<"EOF";
+var accounts = eth.accounts.length;
+for (var i = eth.accounts.length; i < 5; i++){
+    personal.newAccount("");
+}
+EOF
+my $create_more_accounts_fn = "$outdir/generated_js/create_more_accounts.js"; # Is overwrited each run which is fine
+open( my $fh, ">", $create_more_accounts_fn ) || die;
+print $fh $js_create_more_accounts;
+my $more_account_output = `geth --exec "loadScript('$create_more_accounts_fn');" attach $ipcpath 2>> ./out/error.log`;
+say $more_account_output;
+
+# Get the generated addresses from the geth client
+# and store them in my_address file
+my $var = `geth --datadir .ethereum_testserver_data/ account list 2>> ./out/error.log`;
+my @list = split /\n/, $var;
+open( my $fh, ">", "my_address");
+foreach my $line (@list){
+    $line =~ /Account #\d+: \{([0-9a-f]*)/;
+    die 'Bad length of address, must be 40 chars long.' unless length($1) == 40;
+    print $fh "0x$1\n";
+}
+close $fh || die "Failed to close";
+
 
 # Get own Ethereum address
 open( my $fh, "<", "my_address");
