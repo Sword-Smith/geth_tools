@@ -1,7 +1,6 @@
 #!/bin/bash
 
-rm -f out/contracts.js
-rm -f out/contracts.js
+rm -f out/contracts.json
 echo PMD0
 
 ./compile_and_deploy.pl out/ example/Erc20.sol "'DKK'" "'DKK'" 1 1000000
