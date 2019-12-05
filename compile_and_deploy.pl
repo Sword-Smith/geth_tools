@@ -184,8 +184,8 @@ for (var i = eth.accounts.length; i < 5; i++){
     personal.newAccount("");
 }
 EOF
-my $create_more_accounts_fn = "$outdir/generated_js/create_more_accounts.js"; # Is overwrited each run which is fine
-open( my $fh, ">", $create_more_accounts_fn ) || die;
+my $create_more_accounts_fn = "$gen_js_dir/create_more_accounts.js"; # Is overwrited each run which is fine
+open( my $fh, ">", $create_more_accounts_fn ) || die "Failed to open file for JS for creating more accounts: $create_more_accounts_fn";
 print $fh $js_create_more_accounts;
 my $more_account_output = `geth --exec "loadScript('$create_more_accounts_fn');" attach $ipcpath 2>> ./out/error.log`;
 say $more_account_output;
