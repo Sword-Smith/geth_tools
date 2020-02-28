@@ -24,12 +24,15 @@ Currently we support OS X and Linux!
 2. Go to geth_tools folder
 3. install cpanminus (`sudo apt-get install cpanminus`)
 4. `cpanm --installdeps .` (remember the dot)
-5. Run `initialize_genesis_block.pl`
-6. Run `run_geth.pl`
+5. Run `run_geth.pl`
+
+You may need to run
+`cpanm --local-lib=~/perl5 local::lib && eval $(perl -I ~/perl5/lib/perl5/ -Mlocal::lib)`
 
 -- Alternatively run the install_on_linux bash script
 
-Now a fully configured geth instance should be running.
+Now a fully configured geth instance should be running in DEV mode. This running instance
+will only mine when there are transactions and it runs its own, local blockchain.
 
 Solidity and Dagger contracts can now be deployed by running `compile_and_deploy.pl`
 
