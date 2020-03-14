@@ -254,15 +254,17 @@ $file->spew_utf8($data);
 
 # Do Check that .sol file names are capitalized and do the actual compilation
 # by invoking solc/daggerc.
+print("HI!");
+my $compile_output = '';
 if ( $file_ext eq "sol" ){
     die "Invalid file name, first letter must be capitalized!" unless $basename =~ /^[[:upper:]]/;
-    system("solc -o $outdir --abi --bin --overwrite $precompiled_fn");
+    $compile_output = `solc -o $outdir --abi --bin --overwrite $precompiled_fn;`;
 } elsif ( $file_ext ~~ [qw(bahr dag)] ){
-    system("daggerc -o $outdir $precompiled_fn");
+    $compile_output = `daggerc -o $outdir $precompiled_fn;`;
 } else {
     die "This program only supports .sol, .dag, and .bahr file extensions";
 }
-
+print("Output from compilation was: " + $compile_output);
 
 # Load the content of the binary file and the ABI def into variables
 my $abi_def_fn = "$outdir/$fn_no_ext.abi";
