@@ -254,7 +254,6 @@ $file->spew_utf8($data);
 
 # Do Check that .sol file names are capitalized and do the actual compilation
 # by invoking solc/daggerc.
-print("HI!");
 my $compile_output = '';
 if ( $file_ext eq "sol" ){
     die "Invalid file name, first letter must be capitalized!" unless $basename =~ /^[[:upper:]]/;
@@ -274,6 +273,22 @@ open( $fh, "<", $bin_fn );
 my $bin        = <$fh> // die "Unable to read the produced binary file $bin_fn";
 $bin           = "0x" . $bin;
 close( $fh );
+
+# add legacy constant indicator to abi def since current versions of geth (1.9.12) for some reason still require this.
+my @methods_from_contract = parse_json( $abi_source )->@*;
+foreach ( @methods_from_contract ) {
+    if ($_->{"type"} eq "function") {
+        if ($_->{"stateMutability"} eq "view" || $_->{"stateMutability"} eq "pure") {
+            $_->{"constant"} = \1;
+        } else {
+            $_->{"constant"} = \0;
+        }
+    }
+}
+
+open(my $fh, '>', $abi_def_fn) or die "Could not open file '$abi_def_fn' $!";
+print $fh encode_json(\@methods_from_contract);
+close $fh;
 
 
 # Check if number of provided arguments match that of the constructor for the contract
