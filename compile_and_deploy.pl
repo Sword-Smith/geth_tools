@@ -277,7 +277,7 @@ close( $fh );
 # add legacy constant indicator to abi def since current versions of geth (1.9.12) for some reason still require this.
 my @methods_from_contract = parse_json( $abi_source )->@*;
 foreach ( @methods_from_contract ) {
-    if ($_->{"type"} eq "function") {
+    if ( $_->{"type"} eq "function" and not exists $_->{"constant"} ) {
         if ($_->{"stateMutability"} eq "view" || $_->{"stateMutability"} eq "pure") {
             $_->{"constant"} = \1;
         } else {
