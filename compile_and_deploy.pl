@@ -369,7 +369,6 @@ close( $fh ) || die;
 my $geth_output = `geth --exec "loadScript('$js_fn');" attach $ipcpath`;
 say "output from Geth execution:\n$geth_output";
 
-
 # Find address in $geth_output and store it in a JSON file
 my $contract_address;
 my @lines = split /\n/, $geth_output;

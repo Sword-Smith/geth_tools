@@ -93,4 +93,4 @@ for (my $i = 1; $i < scalar @my_address; $i++) {
 my $commands_fn = $ARGV[1]; # Contains the actual code (besides the var decls) to run
 my $exec_output = `geth --exec "$unlock_string loadScript('$dec_var_fn'); loadScript('$commands_fn');" attach $ipcpath`;
 
-say "output from executing JavaScript in Geth is:\n $exec_output";
+say "output from executing JavaScript in Geth is:\n $exec_output\n";
