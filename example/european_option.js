@@ -16,9 +16,9 @@ var balanceMe = Erc20_DAI.balanceOf(me);
 var balanceOther = Erc20_DAI.balanceOf(other);
 console.log("Initial balance: " + balanceMe);
 
-Erc20_DAI.approve(BettingExample3_.address, 50);
+Erc20_DAI.approve(European_option_.address, 50);
 
-BettingExample3_.activate();
+European_option_.activate();
 
 
 balanceMe = Erc20_DAI.balanceOf(me);
@@ -28,7 +28,7 @@ sleep(3100);
 
 DataFeed0_.set(0, 200);
 
-BettingExample3_.execute();
+European_option_.execute();
 
 balanceMe = Erc20_DAI.balanceOf(me);
 balanceOther = Erc20_DAI.balanceOf(other);
