@@ -1,14 +1,14 @@
 //SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.5.0;
 
-contract Erc20 {
+contract Erc20PartyToken {
 
   // Datastructures holding internal state
   mapping (address => uint256) public balanceOf;
   mapping (address => mapping (address => uint256)) allowed; // provider2spender2balance
 
   // Events
-  event TransferEvent(address indexed _from, address indexed _to, uint256 _value);
+  event Transfer(address indexed from, address indexed to, uint256 value);
   event ApprovalEvent(address indexed _owner, address indexed _spender, uint256 _value);
   event Deployed(address indexed _admin, uint256 indexed _totalSupply, string _name);
 
@@ -38,6 +38,23 @@ contract Erc20 {
     return allowed[_tokenOwner][_spender];
   }
 
+   // The following two functions do not check for overflow.
+  function mint(address account, uint256 amount) public returns (bool success){
+    //require(msg.sender == admin, "ERC20: only admin can mint");
+    balanceOf[account] += amount;
+    totalSupply_ += amount;
+    emit Transfer(address(0), account, amount);
+    return true;
+  }
+
+  function burn(address account, uint256 amount) public returns (bool success){
+    //require(msg.sender == admin, "ERC20: Only admin can burn");
+    balanceOf[account] -= amount;
+    totalSupply_ -= amount;
+    emit Transfer(account, address(0), amount);
+    return true;
+  }
+
   function transfer(address _to, uint256 _value) public returns (bool success){
     // Check if the sufficient balance is present
     if (balanceOf[msg.sender] < _value) return false;
@@ -47,7 +64,7 @@ contract Erc20 {
 
     balanceOf[msg.sender] -= _value;
     balanceOf[_to] += _value;
-    emit TransferEvent(msg.sender, _to, _value);
+    emit Transfer(msg.sender, _to, _value);
 
     return true;
   }
@@ -66,7 +83,7 @@ contract Erc20 {
     allowed[_from][msg.sender] -= _value;
     balanceOf[_from] -= _value;
     balanceOf[_to] += _value;
-    emit TransferEvent(msg.sender, _to, _value);
+    emit Transfer(msg.sender, _to, _value);
 
     return true;
   }

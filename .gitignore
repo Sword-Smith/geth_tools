@@ -6,3 +6,6 @@ auto_generated_js
 test/*
 *.sublime-workspace
 *.sublime-project
+*.bin
+*.abi
+*_precompiled
