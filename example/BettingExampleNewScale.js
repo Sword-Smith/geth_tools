@@ -3,7 +3,7 @@ me = web3.eth.accounts[0];
 console.log(""); // Print an extra line to make output look nicer
 
 // Check state before activate
-var BettingAddress = BettingExampleNew_.address;
+var BettingAddress = BettingExampleNewScale_.address;
 var allowanceBeforeApprove = Erc20_CHF.allowance(me,BettingAddress).toNumber();
 var balanceBeforeActivate = Erc20_CHF.balanceOf(me).toNumber();
 
@@ -13,6 +13,7 @@ function printBalances() {
     Erc20_CHF.balanceOf.call(BettingAddress, function(error, balance){ console.log("Derivative contract balance on token contract CHF is: " + balance) } );
     Erc20PartyToken_pos0.balanceOf.call(me, function(error, balance){ console.log("PT.balance(me): " + balance) } );
     Erc20PartyToken_pos1.balanceOf.call(me, function(error, balance){ console.log("PT.balance(you): " + balance) } );
+
 
 }
 
@@ -89,7 +90,7 @@ var subscription = web3.eth.subscribe('logs', {}, function(error, result){
 
 
 // ACTIVATE
-b_A = BettingExampleNew_.activate(7);
+b_A = BettingExampleNewScale_.activate(7);
 t0_A = web3.eth.getTransaction(b_A);
 while(t0_A.blockNumber === null){
     t0_A = web3.eth.getTransaction(b_A);
@@ -109,6 +110,7 @@ Erc20_CHF.balanceOf.call(me,
     function(error, balance) {
         assertEquals( balance, valueBeforeActivate - validApproveAmount, "Check my balance after activate" );
     });
+
 
 
 
