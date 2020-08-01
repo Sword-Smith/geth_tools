@@ -164,12 +164,41 @@ printBalances();
 console.log("********* Calling pay() on DC *********");
 try {
 pay = BettingExampleNewScale_.pay();
+sleep(2000)
 pay_tx = web3.eth.getTransaction(pay);
 while(pay_tx.blockNumber === null){
+sleep(2000)
     pay_tx = web3.eth.getTransaction(pay);
 }
 } catch (error) {console.error(error);}
 
 printBalances();
+
+console.log("********* Calling pay() on DC *********");
+try {
+pay = BettingExampleNewScale_.pay();
+sleep(2000)
+pay_tx = web3.eth.getTransaction(pay);
+while(pay_tx.blockNumber === null){
+sleep(2000)
+    pay_tx = web3.eth.getTransaction(pay);
+}
+} catch (error) {console.error(error);}
+
+printBalances();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 console.log("\n\n\n********* No more user commands *********");
 printBalances();

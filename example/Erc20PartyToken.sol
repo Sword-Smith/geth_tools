@@ -39,20 +39,20 @@ contract Erc20PartyToken {
   }
 
    // The following two functions do not check for overflow.
-  function mint(address account, uint256 amount) public returns (bool success){
+  function mint(address account, uint256 amount) public {
     //require(msg.sender == admin, "ERC20: only admin can mint");
     balanceOf[account] += amount;
     totalSupply_ += amount;
     emit Transfer(address(0), account, amount);
-    return true;
   }
 
-  function burn(address account, uint256 amount) public returns (bool success){
+  function burn(address account, uint256 amount) public {
     //require(msg.sender == admin, "ERC20: Only admin can burn");
-    balanceOf[account] -= amount;
+    uint256 balance = balanceOf[account];
+    require(balance >= amount, "existing balance must exceed amount to burn");
+    balanceOf[account] = balance - amount;
     totalSupply_ -= amount;
     emit Transfer(account, address(0), amount);
-    return true;
   }
 
   function transfer(address _to, uint256 _value) public returns (bool success){
