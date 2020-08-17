@@ -2,6 +2,13 @@ function l(arg){
   console.log(arg);
 }
 
+function do_mint(contract, contract_address, num) {
+  log_info("Calling mint(" + num + ") on DC");
+  b_A = contract.mint(num);
+  t0_A = web3.eth.getTransaction(b_A);
+  printBalances(contract_address);
+}
+
 function do_pay(contract, contract_address) {
   log_info("Calling pay() on DC");
   try {
