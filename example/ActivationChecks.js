@@ -6,26 +6,16 @@ me = web3.eth.accounts[0];
 var contract = ActivationChecks_;
 var contract_address = contract.address;
 
-log_big("Preparing for the ActivationChecks_ test.");
+log_big("ActivationChecks_ test.");
 
-do_approve(1000, 3000000, contract, contract_address)
-
+do_approve(1000, 3000000, contract_address);
 do_set(DataFeed1_, Math.pow(2, 2));
 
-log_big("This should be rejected due to not-activate!");
-do_pay(contract, contract_address);
-do_pay(contract, contract_address);
-do_pay(contract, contract_address);
+fail(do_pay(contract, contract_address));
+fail(do_mint(contract, 1));
 
+succ(do_activate(contract, 1));
+fail(do_activate(contract, 1));
 
-log_big("This should be work.");
-do_activate(contract, contract_address, 50);
-
-log_big("This should be rejected due to already-activated!");
-
-log_big("This should be work.");
-do_pay(contract, contract_address);
-do_pay(contract, contract_address);
-do_pay(contract, contract_address);
-
-log_big("Done with the ActivationChecks_ test.");
+succ(do_mint(contract, 1));
+succ(do_pay(contract, contract_address));

@@ -10,24 +10,13 @@ var contract_address = SafeAdd_.address;
 var contract = SafeAdd_;
 
 log_big("Preparing for the safe addition test.");
-
-do_approve(1000, 3000000, contract, contract_address)
-
-do_activate(contract, contract_address, 50);
+do_approve(1000, 3000000, contract_address);
+do_activate(contract, 50);
 
 // first it tries to overflow, gets rejected
-log_big("This should be rejected (execution reverted) due to overflow!");
 do_set(DataFeed1_, Math.pow(2, 254));
-do_pay(contract, contract_address);
-do_pay(contract, contract_address);
-do_pay(contract, contract_address);
-do_pay(contract, contract_address);
+fail(do_pay(contract, contract_address));
 
 // then it tries some legal number, and succeeds
-log_big("This should be work.");
 do_set(DataFeed1_, Math.pow(2, 253));
-do_pay(contract, contract_address);
-do_pay(contract, contract_address);
-do_pay(contract, contract_address);
-
-log_big("Done with safe addition test!");
+succ(do_pay(contract, contract_address));

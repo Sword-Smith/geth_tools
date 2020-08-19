@@ -11,25 +11,14 @@ var contract_address = SafeMul_.address;
 var contract = SafeMul_;
 
 log_big("Preparing for the safe multiplication test.");
-
-do_approve(1000, 3000000, contract, contract_address)
-
-do_activate(contract, contract_address, 50);
+do_approve(1000, 3000000, contract_address)
+do_activate(contract, 50);
 
 // first it tries to overflow, gets rejected
-log_big("This should be rejected (execution reverted) due to overflow!");
 do_set(DataFeed1_, -3);
 do_set(DataFeed2_, Math.pow(2,254));
-do_pay(contract, contract_address);
-do_pay(contract, contract_address);
-do_pay(contract, contract_address);
-do_pay(contract, contract_address);
+fail(do_pay(contract, contract_address));
 
 // then it tries some legal number, and succeeds
-log_big("This should work.");
 do_set(DataFeed1_, 1);
-do_pay(contract, contract_address);
-do_pay(contract, contract_address);
-do_pay(contract, contract_address);
-
-log_big("Done with safe multiplication test!");
+succ(do_pay(contract, contract_address));
