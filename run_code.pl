@@ -94,3 +94,13 @@ my $commands_fn = $ARGV[1]; # Contains the actual code (besides the var decls) t
 my $exec_output = `geth --exec "$unlock_string loadScript('$dec_var_fn'); loadScript('$commands_fn');" attach $ipcpath`;
 
 say "output from executing JavaScript in Geth is:\n $exec_output\n";
+
+if (index($exec_output, "GoError") != -1) {
+   die "An error occured! -perl\n";
+}
+
+# How do we get the exit code of the get --exec command? Let's print it here!
+# If this does not give us what we want, then we must inspect the stdout of the
+# executed command. We can do this with a regular expression. If there is a matches
+# on something that indicates failure, let' s then exit this Perl program with
+# exit code 1. Otherwise exit code 0.

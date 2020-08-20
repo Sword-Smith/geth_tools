@@ -5,4 +5,5 @@
 ./run_SafeDiv.sh &&
 ./run_ActivationChecks.sh &&
 ./run_InputValidation.sh &&
-./run_BettingExampleNewScale.sh
+./run_BettingExampleNewScale.sh &&
+./run_BettingExampleNew.sh
