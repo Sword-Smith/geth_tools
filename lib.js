@@ -26,6 +26,22 @@ function do_approve(validApproveAmount, gas_amount, contract_address) {
       });
     } catch (error) {return RES.FAIL;} return RES.SUCC;
   }
+function do_changeAdmin(contract_address) {
+  // Cannot read `.admin`. If this is to work, we need to implement
+  // a `.getAdmin()` method on the PT. Please check OpenZeppelin ERC20 or ERC1155.
+  // l("Old admin: ", Erc20PartyToken_pos0.admin)
+  // l("Old admin: ", Erc20PartyToken_pos1.admin)
+  try {
+    tx0 = Erc20PartyToken_pos0.changeAdmin(contract_address);
+    tx1 = Erc20PartyToken_pos1.changeAdmin(contract_address);
+    while (tx0 === null || tx1 === null) {
+      tx0 = Erc20PartyToken_pos0.changeAdmin(contract_address);
+      tx1 = Erc20PartyToken_pos1.changeAdmin(contract_address);
+    }
+  //l("New admin: ", Erc20PartyToken_pos0.admin)
+  //l("New admin: ", Erc20PartyToken_pos1.admin)
+  } catch (error) {return RES.FAIL;} return RES.SUCC;
+}
 function do_activate(contract, num) {
   try {
     get_transaction(contract.activate(num));

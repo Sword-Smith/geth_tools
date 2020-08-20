@@ -6,6 +6,7 @@ var contract_address = contract.address;
 
 log_big("Preparing for the InputValidation_ test.");
 do_approve(1000, 3000000, contract_address);
+do_changeAdmin(contract_address);
 do_set(DataFeed1_, Math.pow(2, 10));
 
 fail(do_activate(contract, -1));

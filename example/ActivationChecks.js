@@ -9,6 +9,8 @@ var contract_address = contract.address;
 log_big("ActivationChecks_ test.");
 
 do_approve(1000, 3000000, contract_address);
+do_changeAdmin(contract_address);
+
 do_set(DataFeed1_, Math.pow(2, 2));
 
 fail(do_pay(contract, contract_address));

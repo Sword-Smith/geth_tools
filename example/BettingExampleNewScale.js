@@ -2,6 +2,16 @@ web3.eth.defaultAccount = web3.eth.accounts[0];
 me = web3.eth.accounts[0];
 console.log(""); // Print an extra line to make output look nicer
 
+var RES = {
+  FAIL: "fail",
+  SUCC: "succ"
+}
+
+
+
+
+
+
 // Check state before activate
 var BettingAddress = BettingExampleNewScale_.address;
 var allowanceBeforeApprove = Erc20_CHF.allowance(me,BettingAddress).toNumber();
@@ -92,6 +102,10 @@ t0_A = web3.eth.getTransaction(b_A);
 while(t0_A.blockNumber === null){
     t0_A = web3.eth.getTransaction(b_A);
 }
+
+
+console.log("********* Change Admin on PTs *********");
+do_changeAdmin(BettingAddress);
 
 console.log("\n\n\n********* Called activate(7) on DC *********");
 printBalances();
@@ -190,10 +204,16 @@ printBalances();
 
 
 
-
-
-
-
+function do_changeAdmin(contract_address) {
+  try {
+    tx0 = Erc20PartyToken_pos0.changeAdmin(contract_address);
+    tx1 = Erc20PartyToken_pos1.changeAdmin(contract_address);
+    while (tx0 === null || tx1 === null) {
+      tx0 = Erc20PartyToken_pos0.changeAdmin(contract_address);
+      tx1 = Erc20PartyToken_pos1.changeAdmin(contract_address);
+    }
+  } catch (error) {return RES.FAIL;} return RES.SUCC;
+}
 
 
 

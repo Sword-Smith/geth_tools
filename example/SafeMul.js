@@ -6,6 +6,7 @@ var contract = SafeMul_;
 
 log_big("Preparing for the safe multiplication test.");
 do_approve(1000, 3000000, contract_address)
+do_changeAdmin(contract_address);
 do_activate(contract, 50);
 
 //
