@@ -192,7 +192,7 @@ say $more_account_output;
 
 # Get the generated addresses from the geth client
 # and store them in my_address file
-my $var = `geth --datadir .ethereum_testserver_data/ account list 2>> ./out/error.log`;
+my $var = `geth --datadir .ethereum_testserver_data/ account list >> ./out/error.log`;
 my @list = split /\n/, $var;
 open( my $fh, ">", "my_address");
 foreach my $line (@list){
