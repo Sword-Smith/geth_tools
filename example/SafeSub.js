@@ -1,10 +1,6 @@
 web3.eth.defaultAccount = web3.eth.accounts[0];
 me = web3.eth.accounts[0];
 
-// lowest i256 is -(2^255)
-// so we trigger overflow on 1 - (-(2^255))
-// 1 - (-1) becomes 2
-
 var contract_address = SafeSub_.address;
 var contract = SafeSub_;
 

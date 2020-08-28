@@ -1,12 +1,6 @@
 web3.eth.defaultAccount = web3.eth.accounts[0];
 me = web3.eth.accounts[0];
 
-// REWRITE
-// highest positive i256 is 2^255-1,
-// which a f64 probably cant reliably represent,
-// so we trigger overflow on -2^254 * 2 instead
-// and show that 2^253 * 2 doesnt overflow
-
 var contract_address = SafeDiv_.address;
 var contract = SafeDiv_;
 

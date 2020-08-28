@@ -31,6 +31,13 @@ function do_activate(contract, num) {
     get_transaction(contract.activate(num));
   } catch (error) {return RES.FAIL;} return RES.SUCC;
 }
+
+function do_pay_a_bit(contract, contract_address) {
+  for (i = 0; i < 3; i += 1){
+    l(get_transaction(pay = contract.pay()));
+  }
+}
+
 function do_pay(contract, contract_address) {
   try {
     var before = getBalances(contract_address);
