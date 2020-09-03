@@ -1,7 +1,10 @@
 //SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.5.0;
 
+import "../../math/SafeMath.sol";
+
 contract Erc20PartyToken {
+  using SafeMath for uint256;
 
   // Datastructures holding internal state
   mapping (address => uint256) public balanceOf;
@@ -14,7 +17,7 @@ contract Erc20PartyToken {
 
   string public name;
   string public symbol;
-  address public admin; // TODO: Remove 
+  address public admin;
   uint8 public decimals;
   uint256 private totalSupply_;
 
@@ -24,10 +27,15 @@ contract Erc20PartyToken {
     decimals = _decimals;
     totalSupply_ = _initialSupply;
 
-    admin = msg.sender; // TODO: REMOVE
+    admin = msg.sender;
     balanceOf[msg.sender] = totalSupply_;
 
     emit Deployed(msg.sender, totalSupply_, _tokenName);
+  }
+
+  function changeAdmin(address newAdmin) public {
+    require(msg.sender == admin);
+    admin = newAdmin;
   }
 
   function totalSupply() public view returns (uint256) {
@@ -40,49 +48,37 @@ contract Erc20PartyToken {
 
    // The following two functions do not check for overflow.
   function mint(address account, uint256 amount) public {
-    //require(msg.sender == admin, "ERC20: only admin can mint");
-    balanceOf[account] += amount;
-    totalSupply_ += amount;
+    require(msg.sender == admin, "ERC20: only admin can mint");
+    balanceOf[account] = balanceOf[account].add(amount);
+    totalSupply_ = totalSupply_.add(amount);
     emit Transfer(address(0), account, amount);
   }
 
   function burn(address account, uint256 amount) public {
-    //require(msg.sender == admin, "ERC20: Only admin can burn");
+    require(msg.sender == admin, "ERC20: Only admin can burn");
     uint256 balance = balanceOf[account];
     require(balance >= amount, "existing balance must exceed amount to burn");
-    balanceOf[account] = balance - amount;
-    totalSupply_ -= amount;
+    balanceOf[account] = balance.sub(amount);
+    totalSupply_ = totalSupply_.sub(amount);
     emit Transfer(account, address(0), amount);
   }
 
   function transfer(address _to, uint256 _value) public returns (bool success){
-    // Check if the sufficient balance is present
-    if (balanceOf[msg.sender] < _value) return false;
-
-     // check for overflow
-    if (balanceOf[_to] + _value < balanceOf[_to]) return false;
-
-    balanceOf[msg.sender] -= _value;
-    balanceOf[_to] += _value;
+    balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
+    balanceOf[_to] = balanceOf[_to].add(_value);
     emit Transfer(msg.sender, _to, _value);
 
     return true;
   }
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool success){
-    // Check if the sufficient balance is present
-    if (balanceOf[_from] < _value) return false;
-
     // Check if msg.sender has been approved to transfer from _from
     require((allowed[_from][msg.sender] >= _value));
 
-    // Check for overflow
-    if (balanceOf[_to] + _value < balanceOf[_to]) return false;
-
     // Transfer the tokens and subtract from the allowance
-    allowed[_from][msg.sender] -= _value;
-    balanceOf[_from] -= _value;
-    balanceOf[_to] += _value;
+    allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
+    balanceOf[_from] = balanceOf[_from].sub(_value);
+    balanceOf[_to] = balanceOf[_to].add(_value);
     emit Transfer(msg.sender, _to, _value);
 
     return true;

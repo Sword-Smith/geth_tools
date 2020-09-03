@@ -6,6 +6,7 @@ var contract = SafeDiv_;
 
 log_big("Preparing for the safe division test.");
 do_approve(1000, 3000000, contract_address)
+do_changeAdmin(contract_address);
 do_activate(contract, 50);
 
 // first it tries to overflow, gets rejected

@@ -1,4 +1,8 @@
 // Helper
+var RES = {
+  FAIL: "fail",
+  SUCC: "succ"
+}
 
 
 
@@ -102,6 +106,8 @@ var subscription = web3.eth.subscribe('logs', {}, function(error, result){
 */
 
 
+console.log("********* Change Admin on PTs *********");
+do_changeAdmin(BettingAddress);
 
 console.log("********* Calling activate(7) on DC *********");
 
@@ -193,3 +199,15 @@ printBalances();
 //console.log("\n\n\n********* No more user commands *********");
 //printBalances();
 //var myResults = events.get(function(error, logs){  console.log(event); });
+
+function do_changeAdmin(contract_address) {
+  try {
+    tx0 = Erc20PartyToken_pos0.changeAdmin(contract_address);
+    tx1 = Erc20PartyToken_pos1.changeAdmin(contract_address);
+    while (tx0 === null || tx1 === null) {
+      tx0 = Erc20PartyToken_pos0.changeAdmin(contract_address);
+      tx1 = Erc20PartyToken_pos1.changeAdmin(contract_address);
+    }
+  } catch (error) {return RES.FAIL;} return RES.SUCC;
+}
+
