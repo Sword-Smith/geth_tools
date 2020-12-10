@@ -10,6 +10,10 @@ function get_transaction(b_A){
 function do_set(dataFeed, num) {
   get_transaction(dataFeed.set(0, num));
 }
+function get_balance(contract, address, index) {
+  b_A = contract.balanceOf(address, index);
+  return b_A;
+}
 function do_approve(validApproveAmount, gas_amount, contract_address) {
   try {
     b_A = Erc20_CHF.approve(contract_address, validApproveAmount, {
