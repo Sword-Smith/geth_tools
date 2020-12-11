@@ -58,14 +58,9 @@ function do_pay_a_bit(contract, contract_address) {
   }
 }
 
-function do_pay(contract, contract_address) {
+function do_pay(contract) {
   try {
-    var before = getBalances(contract_address);
     get_transaction(pay = contract.pay());
-    while (before === getBalances(contract_address)){
-      sleep(1000);
-      get_transaction(pay = contract.pay());
-    }
   } catch (error) {return RES.FAIL;} return RES.SUCC;
 }
 function do_mint(contract, num) {
