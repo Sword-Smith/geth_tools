@@ -1,5 +1,6 @@
 web3.eth.defaultAccount = web3.eth.accounts[0];
 me = web3.eth.accounts[0];
+var other = web3.eth.accounts[1];
 
 var contract = MintChecks_;
 log_big("MintChecks_ test.");
@@ -48,13 +49,13 @@ assertEquals(Erc20_CHF.balanceOf(contract.address).toNumber(), 200, "DC Settleme
 fail(do_mint(contract, 1), "Disallow minting that would exceeed approval");
 fail(do_mint(contract, 0), "Disallow minting of 0");
 
-// Test burning
+// Test burning with equal PT balances (balance(PT0) == balance(PT1)
 
 fail(do_burn(contract, 0), "Disallow burning 0 PT even when some are available");
 assertEquals(contract.balanceOf(me, 0).toNumber(), 10, "PartyToken 0 balance unaffected by failed zero-burn");
 assertEquals(contract.balanceOf(me, 1).toNumber(), 10, "PartyToken 1 balance unaffected by failed zero-burn");
 assertEquals(Erc20_CHF.balanceOf(me).toNumber(), 19800, "Settlement asset unaffected by failed zero-burn");
-assertEquals(Erc20_CHF.balanceOf(contract.address).toNumber(), 200, "DC Settlement unaffected by failed zero-burn");
+assertEquals(Erc20_CHF.balanceOf(contract.address).toNumber(), 200, "DC Settlement unaffected by 1st failed zero-burn");
 
 fail(do_burn(contract, 11), "Disallow burning more PT than available");
 assertEquals(contract.balanceOf(me, 0).toNumber(), 10, "PartyToken 0 balance unaffected by failed burn");
@@ -84,4 +85,65 @@ fail(do_burn(contract, 0), "Disallow burning 0 PT even when there are 0 PTs");
 assertEquals(contract.balanceOf(me, 0).toNumber(), 0, "PartyToken 0 balance unaffected by failed zero-burn");
 assertEquals(contract.balanceOf(me, 1).toNumber(), 0, "PartyToken 1 balance unaffected by failed zero-burn");
 assertEquals(Erc20_CHF.balanceOf(me).toNumber(), 20000, "Settlement asset unaffected by failed zero-burn");
-assertEquals(Erc20_CHF.balanceOf(contract.address).toNumber(), 0, "DC Settlement unaffected by failed zero-burn");
+assertEquals(Erc20_CHF.balanceOf(contract.address).toNumber(), 0, "DC Settlement unaffected by 2nd failed zero-burn");
+
+// Fail additional mint since approval is insufficient
+fail(do_mint(contract, 1), "Disallow mint if approval is insufficient (actually partly an ERC20 test)");
+
+// Test burning with unequal PT balances (balance(PT0) != balance(PT1), where balance(PT0) < balance(PT1)
+do_approve(200, 3000000, contract.address);
+succ(do_mint(contract, 10), "Allow the minting of 10 additional PT pairs for balance(PT0) < balance(PT1) tests");
+succ(do_transfer(contract, me, other, 0, 5), "Allow me to transfer away 5 PT0s");
+assertEquals(contract.balanceOf(me, 0).toNumber(), 5, "PartyToken 0 balance 5 after mint of 10 and transferred away 5");
+assertEquals(contract.balanceOf(me, 1).toNumber(), 10, "PartyToken 1 is 10 after mint of 10");
+
+succ(do_burn(contract, 3), "Burn 3 PT token pairs when balance is 5/10");
+assertEquals(contract.balanceOf(me, 0).toNumber(), 2, "PartyToken 0 balance is 2 after 5 transferred and 3 was burned");
+assertEquals(contract.balanceOf(me, 1).toNumber(), 7, "PartyToken 1 balance is 7 after 3 was burned");
+
+fail(do_burn(contract, 3), "Fail the burn of 3 PT token pairs when balance is 2/7");
+assertEquals(contract.balanceOf(me, 0).toNumber(), 2, "PartyToken 0 balance is 2 after failed burn for partial balance insufficiency");
+assertEquals(contract.balanceOf(me, 1).toNumber(), 7, "PartyToken 1 balance is 7 after failed burn for partial balance insufficiency");
+
+succ(do_burn(contract, 2), "Succeed burn when balance is 2/7");
+assertEquals(contract.balanceOf(me, 0).toNumber(), 0, "PT0 balance is 0 after succeeded burn when balance is 2/7");
+assertEquals(contract.balanceOf(me, 1).toNumber(), 5, "PT1 balance is 5 after succeeded burn when balance is 2/7");
+
+fail(do_burn(contract, 1), "Cannot burn anything when PT0 balance is 0");
+assertEquals(contract.balanceOf(me, 0).toNumber(), 0, "PT0 balance unaffected by failed burn 3.");
+assertEquals(contract.balanceOf(me, 1).toNumber(), 5, "PT0 balance unaffected by failed burn 3.");
+
+fail(do_burn(contract, 0), "Cannot burn 0 when PT0 balance is 0");
+assertEquals(contract.balanceOf(me, 0).toNumber(), 0, "PT0 balance unaffected by failed burn 4.");
+assertEquals(contract.balanceOf(me, 1).toNumber(), 5, "PT0 balance unaffected by failed burn 4.");
+
+// Test burning with unequal PT balances (balance(PT0) != balance(PT1), where balance(PT0) > balance(PT1)
+// First get rid of all PTs
+succ(do_transfer(contract, me, other, 1, 5), "Allow me to get rid of last PT1s");
+
+do_approve(200, 3000000, contract.address);
+succ(do_mint(contract, 10), "Allow the minting of 10 additional PT pairs for balance(PT0) > balance(PT1) tests");
+succ(do_transfer(contract, me, other, 1, 5), "Allow me to transfer away 5 PT1s, b_PT0 > b_PT1");
+
+assertEquals(contract.balanceOf(me, 0).toNumber(), 10, "PartyToken 0 is balance 10 after mint of 10, b_PT0 > b_PT1");
+assertEquals(contract.balanceOf(me, 1).toNumber(), 5, "PartyToken 1 is 5 after mint of 10 and transfer of 5, b_PT0 > b_PT1");
+
+succ(do_burn(contract, 3), "Burn 3 PT token pairs when balance is 10/5, b_PT0 > b_PT1");
+assertEquals(contract.balanceOf(me, 0).toNumber(), 7, "PartyToken 0 balance is 7 after 3 was burned, b_PT0 > b_PT1");
+assertEquals(contract.balanceOf(me, 1).toNumber(), 2, "PartyToken 1 balance is 2 after 5 transferred and 3 was burned, b_PT0 > b_PT1");
+
+fail(do_burn(contract, 3), "Fail the burn of 3 PT token pairs when balance is 7/2, b_PT0 > b_PT1");
+assertEquals(contract.balanceOf(me, 0).toNumber(), 7, "PartyToken 0 balance is 7 after failed burn for partial balance insufficiency, b_PT0 > b_PT1");
+assertEquals(contract.balanceOf(me, 1).toNumber(), 2, "PartyToken 1 balance is 2 after failed burn for partial balance insufficiency, b_PT0 > b_PT1");
+
+succ(do_burn(contract, 2), "Succeed burn when balance is 7/2, b_PT0 > b_PT1");
+assertEquals(contract.balanceOf(me, 0).toNumber(), 5, "PT0 balance is 5 after succeeded burn when balance is 7/2, b_PT0 > b_PT1");
+assertEquals(contract.balanceOf(me, 1).toNumber(), 0, "PT1 balance is 0 after succeeded burn when balance is 7/2, b_PT0 > b_PT1");
+
+fail(do_burn(contract, 1), "Cannot burn anything when PT1 balance is 0, b_PT0 > b_PT1");
+assertEquals(contract.balanceOf(me, 0).toNumber(), 5, "PT0 balance unaffected by failed burn 5., b_PT0 > b_PT1");
+assertEquals(contract.balanceOf(me, 1).toNumber(), 0, "PT0 balance unaffected by failed burn 5., b_PT0 > b_PT1");
+
+fail(do_burn(contract, 0), "Cannot burn 0 when PT0 balance is 0, b_PT0 > b_PT1");
+assertEquals(contract.balanceOf(me, 0).toNumber(), 5, "PT0 balance unaffected by failed burn 6., b_PT0 > b_PT1");
+assertEquals(contract.balanceOf(me, 1).toNumber(), 0, "PT0 balance unaffected by failed burn 6., b_PT0 > b_PT1");
