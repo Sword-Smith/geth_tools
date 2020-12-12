@@ -8,49 +8,33 @@ do_approve(1000, 3000000, contract_address);
 do_set(DataFeed1_, 10);
 do_set(DataFeed0_, 0);
 
-fail(do_pay(contract, contract_address));
-fail(do_mint(contract, 1));
+fail(do_pay(contract, contract_address), "Disallow pay before activation");
+fail(do_mint(contract, 1), "Disallow mint before activation");
 
 var a0 = contract.balanceOf(me, 0);
 var a1 = contract.balanceOf(me, 1);
-console.log("own balance of token ID 0, before activation is: " + a0.toNumber());
-console.log("own balance of token ID 1, before activation is: " + a1.toNumber());
-
 var saBalanceBefore = Erc20_CHF.balanceOf(me);
 assertEquals(a0.toNumber(), 0, "PartyToken 0 should have balance 0 before activation");
 assertEquals(a1.toNumber(), 0, "PartyToken 1 should have balance 0 before activation");
 assertEquals(saBalanceBefore.toNumber(), 20000, "Settlement asset should have balance 20,000 before activation");
 
-succ(do_activate(contract, 5));
-console.log("My SA balance is: " + Erc20_CHF.balanceOf(me));
-fail(do_activate(contract, 1));
-
-console.log("Activated");
+succ(do_activate(contract, 5), "Allow activation with 5");
+fail(do_activate(contract, 1), "Disallow activation after contract is active");
 
 var a0New = contract.balanceOf(me, 0);
 var a1New = contract.balanceOf(me, 1);
-console.log("a0 is: " + a0New);
-console.log("a1 is: " + a1New);
-
+var saBalanceAfter = Erc20_CHF.balanceOf(me);
 assertEquals(a0New.toNumber(), 5, "PartyToken 0 should have balance 5 after activation");
 assertEquals(a1New.toNumber(), 5, "PartyToken 1 should have balance 5 after activation");
-var saBalanceAfter = Erc20_CHF.balanceOf(me);
 assertEquals(saBalanceAfter.toNumber(), 19900, "Settlement asset should have balance 19,900 after activation");
 
-fail(do_activate(contract, 1));
 sleep(5000);
-sleep(5000);
-do_pay(contract);
-do_pay(contract);
+succ(do_pay(contract), "Allow pay after time has passed");
+do_pay(contract); // For some reason this is needed here
 sleep(5000);
 saBalanceAfter = Erc20_CHF.balanceOf(me);
 a0New = contract.balanceOf(me, 0);
 a1New = contract.balanceOf(me, 1);
-console.log("PMD10");
-console.log("SA balance: " + saBalanceAfter.toNumber());
-console.log("PartyToken 0: " + a0New.toNumber());
-console.log("PartyToken 1: " + a1New.toNumber());
 assertEquals(saBalanceAfter.toNumber(), 20000, "Settlement asset should have balance 20,000 after pay");
 assertEquals(a0New.toNumber(), 0, "PartyToken 0 should have balance 5 after activation");
 assertEquals(a1New.toNumber(), 0, "PartyToken 1 should have balance 5 after activation");
-saBalanceAfter = Erc20_CHF.balanceOf(me);
