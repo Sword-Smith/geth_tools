@@ -85,6 +85,12 @@ function do_transfer(contract, from, to, id, value) {
   } catch (error) {return RES.FAIL;} return RES.SUCC;
 }
 
+function do_implicit_transfer(contract, from, to, id, value, caller) {
+  try {
+    get_transaction(contract.safeTransferFrom(from, to, id, value, 0, { from: caller, gas: 3000000 }));
+  } catch (error) {console.log(error); return RES.FAIL;} return RES.SUCC;
+}
+
 function getBalances(contract_address) {
   var res_string = "";
   Erc20_CHF.balanceOf.call(me, function(error, balance) {
