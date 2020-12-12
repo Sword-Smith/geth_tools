@@ -1,5 +1,5 @@
 //SPDX-License-Identifier: UNLICENSED
-pragma solidity >=0.4.9;
+pragma solidity >=0.7.0;
 
 contract DataFeed1 {
   uint256 price;
