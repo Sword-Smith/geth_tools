@@ -30,3 +30,5 @@ assertEquals(contract.balanceOf(me, 0).toNumber(), 1, "I should have transferred
 assertEquals(contract.balanceOf(me, 1).toNumber(), 5, "I should not have transferred any of PT 1.");
 assertEquals(contract.balanceOf(other, 0).toNumber(), 4, "Other should have received 4 of PT 0.");
 assertEquals(contract.balanceOf(other, 1).toNumber(), 0, "Other should not have any of PT 1.");
+
+fail(do_transfer(contract, me, "0x0000000000000000000000000000000000000000", 0, 1), "Fail when _to is 0 (ERC-1155 requirement).");
