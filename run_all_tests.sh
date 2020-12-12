@@ -8,6 +8,7 @@ set -e # Halt on error
 ./ActivationChecks/run_ActivationChecks.sh
 ./BalanceChecks/run_BalanceChecks.sh
 ./MintChecks/run_MintChecks.sh
+./TransferChecks/run_TransferChecks.sh
 # ./run_InputValidation.sh &&
 # ./run_BettingExampleNewScale.sh &&
 # ./run_BettingExampleNew.sh

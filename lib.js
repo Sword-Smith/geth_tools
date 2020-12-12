@@ -63,16 +63,26 @@ function do_pay(contract) {
     get_transaction(pay = contract.pay());
   } catch (error) {return RES.FAIL;} return RES.SUCC;
 }
+
 function do_mint(contract, num) {
   try {
     get_transaction(contract.mint(num));
   } catch (error) {return RES.FAIL;} return RES.SUCC;
 }
+
 function do_burn(contract, num) {
   try {
     get_transaction(contract.burn(num));
   } catch (error) {return RES.FAIL;} return RES.SUCC;
 }
+
+// TODO: Currently we assume that `_from` is always CALLER.
+function do_transfer(contract, from, to, id, value) {
+  try {
+    get_transaction(contract.safeTransferFrom(from, to, id, value, 0));
+  } catch (error) {return RES.FAIL;} return RES.SUCC;
+}
+
 function getBalances(contract_address) {
   var res_string = "";
   Erc20_CHF.balanceOf.call(me, function(error, balance) {
