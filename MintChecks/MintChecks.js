@@ -82,6 +82,6 @@ assertEquals(Erc20_CHF.balanceOf(contract.address).toNumber(), 0, "DC Settlement
 
 fail(do_burn(contract, 0), "Disallow burning 0 PT even when there are 0 PTs");
 assertEquals(contract.balanceOf(me, 0).toNumber(), 0, "PartyToken 0 balance unaffected by failed zero-burn");
-assertEquals(contract.balanceOf(me, 1).toNumber(), 00, "PartyToken 1 balance unaffected by failed zero-burn");
+assertEquals(contract.balanceOf(me, 1).toNumber(), 0, "PartyToken 1 balance unaffected by failed zero-burn");
 assertEquals(Erc20_CHF.balanceOf(me).toNumber(), 20000, "Settlement asset unaffected by failed zero-burn");
 assertEquals(Erc20_CHF.balanceOf(contract.address).toNumber(), 0, "DC Settlement unaffected by failed zero-burn");
