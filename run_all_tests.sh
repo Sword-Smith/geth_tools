@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e # Halt on error
 
-# ./run_SafeAdd.sh &&
+./SafeAdd/run_SafeAdd.sh
 # ./run_SafeSub.sh &&
 # ./run_SafeMul.sh &&
 # ./run_SafeDiv.sh &&
