@@ -99,21 +99,29 @@ var RES = {
   FAIL: "fail",
   SUCC: "succ"
 }
-function fail(call){
-  assertEquals(call, RES.FAIL);
+function fail(call, reason){
+  assertEquals(call, RES.FAIL, reason);
 }
-function succ(call){ //xD
-  assertEquals(call, RES.SUCC);
+function succ(call, reason){ //xD
+  assertEquals(call, RES.SUCC, reason);
 }
 function assertEquals(actual, expected, reason) {
     if (actual !== expected) {
         formatError(actual, expected, reason);
+    } else {
+        formatSuccess(reason);
     }
 }
 function assertNotEquals(actual, expected, reason) {
     if (actual === expected) {
         formatError(actual, expected, reason);
+    } else {
+      formatSuccess(reason);
     }
+}
+
+function formatSuccess(reason) {
+  console.log("\x1b[32m" + " ✓ " + reason);
 }
 
 function formatError(actual, expected, reason) {
