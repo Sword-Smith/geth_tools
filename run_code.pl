@@ -85,10 +85,7 @@ while (<$fh>) {
 close $fh || die;
 
 # address 0 has no password, but the others do :/
-my $unlock_string;
-for (my $i = 1; $i < scalar @my_address; $i++) {
-    $unlock_string .= "personal.unlockAccount(web3.eth.accounts[$i], '');";
-}
+my $unlock_string = "personal.unlockAccount(web3.eth.accounts[1], '', 15000);";
 
 my $commands_fn = $ARGV[1]; # Contains the actual code (besides the var decls) to run
 my $exec_output = `geth --exec "$unlock_string loadScript('$dec_var_fn'); loadScript('$commands_fn');" attach $ipcpath`;
