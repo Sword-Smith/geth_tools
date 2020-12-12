@@ -8,7 +8,9 @@ function get_transaction(b_A){
   }
 }
 function do_set(dataFeed, num) {
-  get_transaction(dataFeed.set(0, num));
+  try {
+    get_transaction(dataFeed.set(0, num));
+  } catch (error) {return RES.FAIL;} return RES.SUCC;
 }
 function get_balance(contract, address, index) {
   b_A = contract.balanceOf(address, index);
