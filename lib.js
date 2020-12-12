@@ -121,14 +121,15 @@ function assertNotEquals(actual, expected, reason) {
 }
 
 function formatSuccess(reason) {
-  console.log("\x1b[32m" + " ✓ " + reason);
+  console.log("\x1b[32m" + " ✓ " + reason + "\x1b[0m");
 }
 
 function formatError(actual, expected, reason) {
-  throw "\nActual: " + actual.toString() + " type: " + typeof(actual) +
+  throw "\x1b[31m\nActual: " + actual.toString() + " type: " + typeof(actual) +
     "\nExpected: " + expected.toString() + " type: " + typeof(expected) +
-    "\n" + (reason === "" ? "" : reason + " ... FAIL");
+    "\n" + (reason === "" ? "" : reason + " ... FAIL\x1b[0m");
 }
+
 function sleep(ms) {
     var date = new Date();
     var curDate = null;
