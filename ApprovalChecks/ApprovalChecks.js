@@ -1,6 +1,7 @@
 web3.eth.defaultAccount = web3.eth.accounts[0];
 me = web3.eth.accounts[0];
 other = web3.eth.accounts[1];
+var thirdAddress = web3.eth.accounts[2];
 
 web3.eth.sendTransaction({to:other, from:me, value:web3.toWei("0.5", "ether")});
 
@@ -33,3 +34,12 @@ assertEquals(do_isApprovedForAll(contract, other, me), true, "I am still approve
 succ(do_setApprovalForAll(contract, me, false, other), "Allow call from other to withdraw approval for me");
 assertEquals(do_isApprovedForAll(contract, me, other), false, "Other is *not* approved after approval withdrawal, 2nd.");
 assertEquals(do_isApprovedForAll(contract, other, me), false, "I am no longer approved after other's approval withdrawal.");
+
+// Verify that approval only applies for the right operator
+succ(do_setApprovalForAll(contract, thirdAddress, true, other), "Allow other to approve thirdAddress");
+assertEquals(do_isApprovedForAll(contract, me, other), false, "Other is *not* approved after approval withdrawal, 3nd.");
+assertEquals(do_isApprovedForAll(contract, other, me), false, "I am no longer approved after other's approval withdrawal, 2nd.");
+assertEquals(do_isApprovedForAll(contract, other, thirdAddress), true, "Third address is approved by other after successful call to setApprovalForAll.");
+
+succ(do_setApprovalForAll(contract, thirdAddress, false, other), "Allow other to approve thirdAddress");
+assertEquals(do_isApprovedForAll(contract, other, thirdAddress), false, "Third address is no longer approved by other after successful withdrawal of approval.");
