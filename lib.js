@@ -78,7 +78,6 @@ function do_burn(contract, num) {
   } catch (error) {return RES.FAIL;} return RES.SUCC;
 }
 
-// TODO: Currently we assume that `_from` is always CALLER.
 function do_transfer(contract, from, to, id, value) {
   try {
     get_transaction(contract.safeTransferFrom(from, to, id, value, 0));
@@ -89,6 +88,16 @@ function do_implicit_transfer(contract, from, to, id, value, caller) {
   try {
     get_transaction(contract.safeTransferFrom(from, to, id, value, 0, { from: caller, gas: 3000000 }));
   } catch (error) {console.log(error); return RES.FAIL;} return RES.SUCC;
+}
+
+function do_setApprovalForAll(contract, operator, approved, caller) {
+  try {
+    get_transaction(contract.setApprovalForAll(operator, approved, { from: caller, gas: 3000000 }));
+  } catch (error) {console.log(error); return RES.FAIL;} return RES.SUCC;
+}
+
+function do_isApprovedForAll(contract, owner, operator) {
+  return contract.isApprovedForAll(owner, operator);
 }
 
 function getBalances(contract_address) {
