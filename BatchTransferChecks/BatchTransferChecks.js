@@ -51,6 +51,56 @@ assertEquals(contract.balanceOf(me, partyToken2).toNumber(), 10, "PartyToken 2 s
 fail(do_batch_transfer(contract, me, "0x0000000000000000000000000000000000000000", [partyToken1], [1]), "Fail when _to is 0 (ERC-1155 requirement).");
 fail(do_batch_transfer(contract, me, other, [2], [9, 8, 7]), "fail when len(_ids) != len(_values)");
 
+// Ensure that all transfer fail when last is invalid
+var amounts = [1, 3, 100];
+fail(do_batch_transfer(contract, me, other, [partyToken2, partyToken1, partyToken0], amounts), "fail when last input value is illegal");
+assertEquals(contract.balanceOf(me, partyToken2).toNumber(), 10, "PartyToken 2 balance is unchanged after failed transfer");
+assertEquals(contract.balanceOf(me, partyToken1).toNumber(), 7, "PartyToken 1 balance is unchanged after failed transfer");
+assertEquals(contract.balanceOf(me, partyToken0).toNumber(), 8, "PartyToken 0 balance is unchanged after failed transfer");
+
+// Fix last (invalid) amount and verify that batch transfer now succeeds
+amounts[2] = 4;
+succ(do_batch_transfer(contract, me, other, [partyToken2, partyToken1, partyToken0], amounts), "succeed when last amount value is now legal");
+assertEquals(contract.balanceOf(me, partyToken2).toNumber(), 9, "PartyToken 2 balance reduced by 1 after successful transfer");
+assertEquals(contract.balanceOf(me, partyToken1).toNumber(), 4, "PartyToken 1 balance reduced by 3 after successful transfer");
+assertEquals(contract.balanceOf(me, partyToken0).toNumber(), 4, "PartyToken 0 balance reduced by 4 after successful transfer");
+
+// Verify that multiple calls for same token ID are allowed
+succ(do_batch_transfer(contract, me, other, [partyToken2, partyToken2, partyToken0], [1, 3, 2]), "Allow multiple calls for same token ID");
+assertEquals(contract.balanceOf(me, partyToken2).toNumber(), 5, "PartyToken 2 balance reduced by 4 after call with repeated token ID");
+assertEquals(contract.balanceOf(me, partyToken1).toNumber(), 4, "PartyToken 1 balance reduced by 0 after call with repeated token ID");
+assertEquals(contract.balanceOf(me, partyToken0).toNumber(), 2, "PartyToken 0 balance reduced by 2 after call with repeated token ID");
+
+/* Verify that approval for this endpoint works */
+assertEquals(contract.balanceOf(other, partyToken0).toNumber(), 8, "Verify other's PartyToken 0 balance");
+assertEquals(contract.balanceOf(other, partyToken1).toNumber(), 6, "Verify other's PartyToken 1 balance");
+assertEquals(contract.balanceOf(other, partyToken2).toNumber(), 5, "Verify other's PartyToken 2 balance");
+// fail(do_implicit_batch_transfer(contract, other, me, [], [], me), "Disallow transfer from other account when not approved, empty arrays");
+fail(do_implicit_batch_transfer(contract, other, me, [partyToken1], [1], me), "Disallow transfer from other account when not approved, single entry");
+fail(do_implicit_batch_transfer(contract, other, me, [partyToken0, partyToken1], [1, 2], me), "Disallow transfer from other account when not approved, multiple entries");
+fail(do_implicit_batch_transfer(contract, other, me, [partyToken0, partyToken1, partyToken2], [1, 2], me), "Disallow transfer from other account when not approved, unequal length of arrays");
+
+succ(do_setApprovalForAll(contract, me, true, other), "Allow other to approve me");
+succ(do_implicit_batch_transfer(contract, other, me, [partyToken1], [1], me), "Allow transfer from other account when approved, single entry");
+assertEquals(contract.balanceOf(other, partyToken0).toNumber(), 8, "Verify other's PartyToken 0 balance, after 1st withdrawal");
+assertEquals(contract.balanceOf(other, partyToken1).toNumber(), 5, "Verify other's PartyToken 1 balance, after 1st withdrawal");
+assertEquals(contract.balanceOf(other, partyToken2).toNumber(), 5, "Verify other's PartyToken 2 balance, after 1st withdrawal");
+assertEquals(contract.balanceOf(me, partyToken0).toNumber(), 2, "Verify own PartyToken 0 balance, after 1st receive");
+assertEquals(contract.balanceOf(me, partyToken1).toNumber(), 5, "Verify own PartyToken 1 balance, after 1st receive");
+assertEquals(contract.balanceOf(me, partyToken2).toNumber(), 5, "Verify own PartyToken 2 balance, after 1st receive");
+
+succ(do_implicit_batch_transfer(contract, other, me, [partyToken0, partyToken1], [1, 2], me), "Allow transfer from other account when approved, multiple entries");
+assertEquals(contract.balanceOf(other, partyToken0).toNumber(), 7, "Verify other's PartyToken 0 balance, after 2nd withdrawal");
+assertEquals(contract.balanceOf(other, partyToken1).toNumber(), 3, "Verify other's PartyToken 1 balance, after 2nd withdrawal");
+assertEquals(contract.balanceOf(other, partyToken2).toNumber(), 5, "Verify other's PartyToken 2 balance, after 2nd withdrawal");
+assertEquals(contract.balanceOf(me, partyToken0).toNumber(), 3, "Verify own PartyToken 0 balance, after 2nd receive");
+assertEquals(contract.balanceOf(me, partyToken1).toNumber(), 7, "Verify own PartyToken 1 balance, after 2nd receive");
+assertEquals(contract.balanceOf(me, partyToken2).toNumber(), 5, "Verify own PartyToken 2 balance, after 2nd receive");
+
+fail(do_implicit_batch_transfer(contract, other, me, [partyToken0, partyToken1, partyToken2], [1, 2], me), "Disallow transfer from other account when *approved*, unequal length of arrays");
+
+// Verify that all fail if one of the requests are for a non-valid token ID
+
 // simple batch transfer of one PT
 // negative:
 //  - len(_ids) = 0, len(_values) = 1
