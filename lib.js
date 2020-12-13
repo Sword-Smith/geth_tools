@@ -6,6 +6,15 @@ function get_transaction(b_A){
   while (t0_A.blockNumber === null) {
       t0_A = web3.eth.getTransaction(b_A);
   }
+
+  // Check if transaction reverted
+  var rec = web3.eth.getTransactionReceipt(b_A);
+
+  // rec.status should be "0x1" for success and "0x0" for failure
+  var statusCode = parseInt(rec.status);
+  if (!statusCode) {
+    throw b_A + " was reverted";
+  }
 }
 function do_set(dataFeed, num) {
   try {
