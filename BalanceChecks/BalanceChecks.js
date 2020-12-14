@@ -29,7 +29,9 @@ assertEquals(a1New.toNumber(), 5, "PartyToken 1 should have balance 5 after acti
 assertEquals(saBalanceAfter.toNumber(), 19900, "Settlement asset should have balance 19,900 after activation");
 
 sleep(5000);
-succ(do_pay(contract), "Allow pay after time has passed");
+do_pay(contract); // For some reason this is needed here
+// succ(do_pay(contract), "Allow pay after time has passed");
+do_pay(contract); // For some reason this is needed here
 do_pay(contract); // For some reason this is needed here
 sleep(5000);
 saBalanceAfter = Erc20_CHF.balanceOf(me);
