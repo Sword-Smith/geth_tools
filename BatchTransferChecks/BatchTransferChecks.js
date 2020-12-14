@@ -86,7 +86,7 @@ fail(do_implicit_batch_transfer(contract, other, me, [partyToken1], [1], me), "D
 fail(do_implicit_batch_transfer(contract, other, me, [partyToken0, partyToken1], [1, 2], me), "Disallow transfer from other account when not approved, multiple entries");
 fail(do_implicit_batch_transfer(contract, other, me, [partyToken0, partyToken1, partyToken2], [1, 2], me), "Disallow transfer from other account when not approved, unequal length of arrays");
 
-succ(do_setApprovalForAll(contract, me, true, other), "Allow other to approve me");
+succ(do_setApprovalForAll(contract, me, true, other), "Other can successfully approve me");
 succ(do_implicit_batch_transfer(contract, other, me, [partyToken1], [1], me), "Allow transfer from other account when approved, single entry");
 assertEquals(contract.balanceOf(other, partyToken0).toNumber(), 8, "Verify other's PartyToken 0 balance, after 1st withdrawal");
 assertEquals(contract.balanceOf(other, partyToken1).toNumber(), 5, "Verify other's PartyToken 1 balance, after 1st withdrawal");
