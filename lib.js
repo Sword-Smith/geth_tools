@@ -7,6 +7,9 @@ function get_transaction(b_A){
       t0_A = web3.eth.getTransaction(b_A);
   }
 
+  // Print data sent in transaction
+  //console.log(t0_A.input);
+
   // Check if transaction reverted
   var rec = web3.eth.getTransactionReceipt(b_A);
 
