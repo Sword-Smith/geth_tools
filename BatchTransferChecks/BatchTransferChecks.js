@@ -81,7 +81,7 @@ assertEquals(contract.balanceOf(me, partyToken0).toNumber(), 2, "PartyToken 0 ba
 assertEquals(contract.balanceOf(other, partyToken0).toNumber(), 8, "Verify other's PartyToken 0 balance");
 assertEquals(contract.balanceOf(other, partyToken1).toNumber(), 6, "Verify other's PartyToken 1 balance");
 assertEquals(contract.balanceOf(other, partyToken2).toNumber(), 5, "Verify other's PartyToken 2 balance");
-// fail(do_implicit_batch_transfer(contract, other, me, [], [], me), "Disallow transfer from other account when not approved, empty arrays");
+fail(do_implicit_batch_transfer(contract, other, me, [], [], me), "Disallow transfer from other account when not approved, empty arrays");
 fail(do_implicit_batch_transfer(contract, other, me, [partyToken1], [1], me), "Disallow transfer from other account when not approved, single entry");
 fail(do_implicit_batch_transfer(contract, other, me, [partyToken0, partyToken1], [1, 2], me), "Disallow transfer from other account when not approved, multiple entries");
 fail(do_implicit_batch_transfer(contract, other, me, [partyToken0, partyToken1, partyToken2], [1, 2], me), "Disallow transfer from other account when not approved, unequal length of arrays");
