@@ -32,10 +32,14 @@ assertEquals(contract.balanceOf(me, partyToken2).toNumber(), 10, "PartyToken 2 s
 succ(do_batch_transfer(contract, me, other, [], []), "allows empty lists of _ids and _values");
 succ(do_batch_transfer(contract, me, other, [partyToken0], [0]), "can batch transfer 0 of PartyToken 0");
 succ(do_batch_transfer(contract, me, other, [partyToken0, partyToken1, partyToken2], [0, 0, 0]), "can batch transfer 0 of PT0, PT1 and PT2");
+fail(do_batch_transfer(contract, me, other, [partyToken0], [666]), "cannot batch transfer when balance is insufficient");
+fail(do_batch_transfer(contract, me, other, [partyToken0, partyToken1, partyToken2], [666, 0, 0]), "cannot batch transfer when balance is insufficient");
+fail(do_batch_transfer(contract, me, other, [partyToken0, partyToken1, partyToken2], [0, 666, 0]), "cannot batch transfer when balance is insufficient");
+fail(do_batch_transfer(contract, me, other, [partyToken0, partyToken1, partyToken2], [0, 0, 666]), "cannot batch transfer when balance is insufficient");
 
-assertEquals(contract.balanceOf(me, partyToken0).toNumber(), 10, "PartyToken 0 should have balance 10 after transferring 0 of it");
-assertEquals(contract.balanceOf(me, partyToken1).toNumber(), 10, "PartyToken 1 should have balance 10 after transferring 0 of PartyToken 0");
-assertEquals(contract.balanceOf(me, partyToken2).toNumber(), 10, "PartyToken 2 should have balance 10 after transferring 0 of PartyToken 0");
+assertEquals(contract.balanceOf(me, partyToken0).toNumber(), 10, "PartyToken 0 should have balance 10 after transferring 0 party tokens");
+assertEquals(contract.balanceOf(me, partyToken1).toNumber(), 10, "PartyToken 1 should have balance 10 after transferring 0 party tokens");
+assertEquals(contract.balanceOf(me, partyToken2).toNumber(), 10, "PartyToken 2 should have balance 10 after transferring 0 party tokens");
 
 succ(do_batch_transfer(contract, me, other, [partyToken0], [1]), "can batch transfer 1 of PartyToken 0");
 assertEquals(contract.balanceOf(me, partyToken0).toNumber(), 9, "PartyToken 0 should have balance 9 after batch transfer of 1 of PartyToken 0");
@@ -49,6 +53,8 @@ assertEquals(contract.balanceOf(me, partyToken1).toNumber(), 7, "PartyToken 1 sh
 assertEquals(contract.balanceOf(me, partyToken2).toNumber(), 10, "PartyToken 2 should have balance 10 after transferring only PT0 and PT1");
 
 fail(do_batch_transfer(contract, me, "0x0000000000000000000000000000000000000000", [partyToken1], [1]), "Fail when _to is 0 (ERC-1155 requirement).");
+fail(do_batch_transfer(contract, me, other, [], [1]), "fail when len(_ids) != len(_values)");
+fail(do_batch_transfer(contract, me, other, [partyToken0], []), "fail when len(_ids) != len(_values)");
 fail(do_batch_transfer(contract, me, other, [2], [9, 8, 7]), "fail when len(_ids) != len(_values)");
 
 // Ensure that all transfer fail when last is invalid
@@ -99,16 +105,17 @@ assertEquals(contract.balanceOf(me, partyToken2).toNumber(), 5, "Verify own Part
 
 fail(do_implicit_batch_transfer(contract, other, me, [partyToken0, partyToken1, partyToken2], [1, 2], me), "Disallow transfer from other account when *approved*, unequal length of arrays");
 
-// Verify that all fail if one of the requests are for a non-valid token ID
+// no-ops
 
-// simple batch transfer of one PT
-// negative:
-//  - len(_ids) = 0, len(_values) = 1
-//  - len(_ids) = 1, len(_values) = 1
-//  - len(_ids) = 0, len(_values) = 1
+succ(do_batch_transfer(contract, me, me, [partyToken0], [1]), "Make sure that sending to oneself is a no-op");
+assertEquals(contract.balanceOf(me, partyToken0).toNumber(), 3, "The balance should remain the same after transferring to oneself");
 
-// valid + invalid party token
-// all sufficient funds
-// sufficient + zeros
-// sufficient + insufficient
-// sufficient + insufficient + zeros
+succ(do_batch_transfer(contract, me, me, [partyToken1, partyToken2], [1, 2]), "Make sure that sending to oneself is a no-op");
+assertEquals(contract.balanceOf(me, partyToken0).toNumber(), 3, "The balance should remain the same after transferring to oneself");
+assertEquals(contract.balanceOf(me, partyToken1).toNumber(), 7, "The balance should remain the same after transferring to oneself");
+assertEquals(contract.balanceOf(me, partyToken2).toNumber(), 5, "The balance should remain the same after transferring to oneself");
+
+succ(do_batch_transfer(contract, me, other, [partyToken0, partyToken1, partyToken2], [1, 2, 0]), "Allow batch transfer when one (last) amount is 0");
+assertEquals(contract.balanceOf(me, partyToken0).toNumber(), 2, "...");
+assertEquals(contract.balanceOf(me, partyToken1).toNumber(), 5, "...");
+assertEquals(contract.balanceOf(me, partyToken2).toNumber(), 5, "...");
