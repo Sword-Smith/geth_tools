@@ -25,17 +25,55 @@ assertEquals(contract.balanceOf(me, partyToken0).toNumber(), 10, "PartyToken 0 s
 assertEquals(contract.balanceOf(me, partyToken1).toNumber(), 10, "PartyToken 1 should have balance 10 after activation");
 assertEquals(contract.balanceOf(me, partyToken2).toNumber(), 10, "PartyToken 2 should have balance 10 after activation");
 
+do_transfer(contract, me, other, partyToken0, 1);
+do_transfer(contract, me, other, partyToken1, 2);
+do_transfer(contract, me, other, partyToken2, 3);
+
+assertEquals(contract.balanceOf(me, partyToken0).toNumber(), 9, "PartyToken 0 should have balance 9 after transfer");
+assertEquals(contract.balanceOf(me, partyToken1).toNumber(), 8, "PartyToken 1 should have balance 8 after transfer");
+assertEquals(contract.balanceOf(me, partyToken2).toNumber(), 7, "PartyToken 2 should have balance 7 after transfer");
+
 // function balanceOfBatch(address[] _owners, uint256[] _ids) returns (uint256[]);
 
 // assertEquals(contract.balanceOfBatch([], []), [], "an empty batch gives an empty result");
 
-var x = contract.balanceOfBatch([], []);
-console.log("derp: " + x);
+assertEquals(contract.balanceOfBatch([], []).length, 0, "The empty batch requests gives no results");
+assertEquals(contract.balanceOfBatch([me], [partyToken0]).length, 1, "Singleton request returns singleton");
 
-var y = contract.balanceOfBatch([me], [0]);
-console.log("me, PT0: " + y);
+assertEquals(contract.balanceOfBatch([me], [partyToken0])[0].toNumber(), 9, "Verify expected balance");
+assertEquals(contract.balanceOfBatch([me], [partyToken1])[0].toNumber(), 8, "Verify expected balance");
+assertEquals(contract.balanceOfBatch([me], [partyToken2])[0].toNumber(), 7, "Verify expected balance");
 
-var z = contract.balanceOfBatch([me, me], [0, 1]);
-console.log("me, PT0: " + z);
+assertEquals(contract.balanceOfBatch([other], [partyToken0])[0].toNumber(), 1, "Verify expected balance");
+assertEquals(contract.balanceOfBatch([other], [partyToken1])[0].toNumber(), 2, "Verify expected balance");
+assertEquals(contract.balanceOfBatch([other], [partyToken2])[0].toNumber(), 3, "Verify expected balance");
 
-//assertEquals(contract.balanceOfBatch([me], [partyToken0]), [10], "an empty batch gives an empty result");
+assertArrayEquals(
+    contract.balanceOfBatch([me, me], [partyToken0, partyToken0]).map(function(x) { return x.toNumber(); }),
+    [9, 9],
+    "Verify expected balance");
+
+assertArrayEquals(
+    contract.balanceOfBatch([me, me, me], [partyToken0, partyToken1, partyToken2]).map(function(x) { return x.toNumber(); }),
+    [9, 8, 7],
+    "Verify expected balance");
+
+assertArrayEquals(
+    contract.balanceOfBatch([me, other, me], [partyToken0, partyToken1, partyToken2]).map(function(x) { return x.toNumber(); }),
+    [9, 2, 7],
+    "Verify expected balance");
+
+try {
+    contract.balanceOfBatch([me], []);
+    assertEquals(1, 2, ":(");
+} catch (error) { assertEquals(1, 1, ":)"); }
+
+try {
+    contract.balanceOfBatch([], [partyToken0]);
+    assertEquals(1, 2, ":(");
+} catch (error) { assertEquals(1, 1, ":)"); }
+
+try {
+    contract.balanceOfBatch([me], [partyToken0, partyToken1]);
+    assertEquals(1, 2, ":(");
+} catch (error) { assertEquals(1, 1, ":)"); }
