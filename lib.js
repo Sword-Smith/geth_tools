@@ -171,6 +171,20 @@ function assertNotEquals(actual, expected, reason) {
     }
 }
 
+function assertArrayEquals(actual, expected, reason) {
+  if (actual.length !== expected.length) {
+    formatArrayError(actual, expected, reason);
+  }
+
+  for (var i = 0; i < actual.length; i++) {
+    if (actual[i] !== expected[i]) {
+      formatArrayError(actual, expected, reason);
+    }
+  }
+
+  formatSuccess(reason);
+}
+
 function formatSuccess(reason) {
   console.log("\x1b[32m" + " ✓ " + reason + "\x1b[0m");
 }
@@ -179,6 +193,12 @@ function formatError(actual, expected, reason) {
   throw "\x1b[31m\nActual: " + actual.toString() + " type: " + typeof(actual) +
     "\nExpected: " + expected.toString() + " type: " + typeof(expected) +
     "\n" + (reason === "" ? "" : reason + " ... FAIL\x1b[0m");
+}
+
+function formatArrayError(actual, expected, reason) {
+  var actualS = "[ " + actual.join(", ") + " ]";
+  var expectedS = "[ " + expected.join(", ") + " ]";
+  formatError(actualS, expectedS, reason);
 }
 
 function sleep(ms) {
