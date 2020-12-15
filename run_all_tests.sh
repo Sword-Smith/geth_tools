@@ -3,8 +3,8 @@ set -e # Halt on error
 
 ./SafeAdd/run_SafeAdd.sh
 ./SafeSub/run_SafeSub.sh
-# ./run_SafeMul.sh &&
-# ./run_SafeDiv.sh &&
+./SafeMul/run_SafeMul.sh &&
+./SafeDiv/run_SafeDiv.sh &&
 ./ActivationChecks/run_ActivationChecks.sh
 ./BalanceChecks/run_BalanceChecks.sh
 ./MintChecks/run_MintChecks.sh

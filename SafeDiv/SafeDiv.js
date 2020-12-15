@@ -5,13 +5,13 @@ var contract_address = SafeDiv_.address;
 var contract = SafeDiv_;
 
 log_big("Preparing for the safe division test.");
-do_approve(1000, 3000000, contract_address)
-do_changeAdmin(contract_address);
-do_activate(contract, 50);
+succ(do_approve(1000, 3000000, contract_address));
+succ(do_activate(contract, 50));
 
 // first it tries to overflow, gets rejected
-do_set(DataFeed1_, 1);
-do_set(DataFeed2_, 0);
+succ(do_set(DataFeed1_, 1));
+succ(do_set(DataFeed2_, 0));
+succ(do_set(DataFeed0_, 1)); // 
 fail(do_pay(contract, contract_address));
 
 do_set(DataFeed1_, -Math.pow(2,255));
