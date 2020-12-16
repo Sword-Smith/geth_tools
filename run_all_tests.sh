@@ -3,8 +3,8 @@ set -e # Halt on error
 
 ./SafeAdd/run_SafeAdd.sh
 ./SafeSub/run_SafeSub.sh
-./SafeMul/run_SafeMul.sh &&
-./SafeDiv/run_SafeDiv.sh &&
+./SafeMul/run_SafeMul.sh
+./SafeDiv/run_SafeDiv.sh
 ./ActivationChecks/run_ActivationChecks.sh
 ./BalanceChecks/run_BalanceChecks.sh
 ./MintChecks/run_MintChecks.sh
@@ -13,4 +13,4 @@ set -e # Halt on error
 ./BatchBalanceChecks/run_BatchBalanceChecks.sh
 ./InputValidation/run_InputValidation.sh
 ./BettingExampleNew/run_BettingExampleNew.sh
-# ./run_BettingExampleNewScale.sh &&
+./BettingExampleNewScale/run_BettingExampleNewScale.sh
