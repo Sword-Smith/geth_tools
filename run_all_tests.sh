@@ -11,6 +11,6 @@ set -e # Halt on error
 ./TransferChecks/run_TransferChecks.sh
 ./BatchTransferChecks/run_BatchTransferChecks.sh
 ./BatchBalanceChecks/run_BatchBalanceChecks.sh
-# ./run_InputValidation.sh &&
+.InputValidation/run_InputValidation.sh
 # ./run_BettingExampleNewScale.sh &&
 # ./run_BettingExampleNew.sh
