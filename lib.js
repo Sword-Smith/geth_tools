@@ -6,9 +6,27 @@ function get_transaction(b_A){
   while (t0_A.blockNumber === null) {
       t0_A = web3.eth.getTransaction(b_A);
   }
+
+  // Print data sent in transaction
+  //console.log(t0_A.input);
+
+  // Check if transaction reverted
+  var rec = web3.eth.getTransactionReceipt(b_A);
+
+  // rec.status should be "0x1" for success and "0x0" for failure
+  var statusCode = parseInt(rec.status);
+  if (!statusCode) {
+    throw b_A + " was reverted";
+  }
 }
 function do_set(dataFeed, num) {
-  get_transaction(dataFeed.set(0, num));
+  try {
+    get_transaction(dataFeed.set(0, num));
+  } catch (error) {return RES.FAIL;} return RES.SUCC;
+}
+function get_balance(contract, address, index) {
+  b_A = contract.balanceOf(address, index);
+  return b_A;
 }
 function do_approve(validApproveAmount, gas_amount, contract_address) {
   try {
@@ -26,22 +44,6 @@ function do_approve(validApproveAmount, gas_amount, contract_address) {
       });
     } catch (error) {return RES.FAIL;} return RES.SUCC;
   }
-function do_changeAdmin(contract_address) {
-  // Cannot read `.admin`. If this is to work, we need to implement
-  // a `.getAdmin()` method on the PT. Please check OpenZeppelin ERC20 or ERC1155.
-  // l("Old admin: ", Erc20PartyToken_pos0.admin)
-  // l("Old admin: ", Erc20PartyToken_pos1.admin)
-  try {
-    tx0 = Erc20PartyToken_pos0.changeAdmin(contract_address);
-    tx1 = Erc20PartyToken_pos1.changeAdmin(contract_address);
-    while (tx0 === null || tx1 === null) {
-      tx0 = Erc20PartyToken_pos0.changeAdmin(contract_address);
-      tx1 = Erc20PartyToken_pos1.changeAdmin(contract_address);
-    }
-  //l("New admin: ", Erc20PartyToken_pos0.admin)
-  //l("New admin: ", Erc20PartyToken_pos1.admin)
-  } catch (error) {return RES.FAIL;} return RES.SUCC;
-}
 function do_activate(contract, num) {
   try {
     get_transaction(contract.activate(num));
@@ -54,26 +56,58 @@ function do_pay_a_bit(contract, contract_address) {
   }
 }
 
-function do_pay(contract, contract_address) {
+function do_pay(contract) {
   try {
-    var before = getBalances(contract_address);
     get_transaction(pay = contract.pay());
-    while (before === getBalances(contract_address)){
-      sleep(1000);
-      get_transaction(pay = contract.pay());
-    }
   } catch (error) {return RES.FAIL;} return RES.SUCC;
 }
+
 function do_mint(contract, num) {
   try {
     get_transaction(contract.mint(num));
   } catch (error) {return RES.FAIL;} return RES.SUCC;
 }
+
 function do_burn(contract, num) {
   try {
     get_transaction(contract.burn(num));
   } catch (error) {return RES.FAIL;} return RES.SUCC;
 }
+
+function do_transfer(contract, from, to, id, value) {
+  try {
+    get_transaction(contract.safeTransferFrom(from, to, id, value, 0));
+  } catch (error) {return RES.FAIL;} return RES.SUCC;
+}
+
+function do_batch_transfer(contract, from, to, ids, values) {
+  try {
+    get_transaction(contract.safeBatchTransferFrom(from, to, ids, values, 0));
+  } catch (error) {return RES.FAIL;} return RES.SUCC;
+}
+
+function do_implicit_batch_transfer(contract, from, to, ids, values, caller) {
+  try {
+    get_transaction(contract.safeBatchTransferFrom(from, to, ids, values, 0, { from: caller, gas: 3000000 }));
+  } catch (error) {return RES.FAIL;} return RES.SUCC;
+}
+
+function do_implicit_transfer(contract, from, to, id, value, caller) {
+  try {
+    get_transaction(contract.safeTransferFrom(from, to, id, value, 0, { from: caller, gas: 3000000 }));
+  } catch (error) {console.log(error); return RES.FAIL;} return RES.SUCC;
+}
+
+function do_setApprovalForAll(contract, operator, approved, caller) {
+  try {
+    get_transaction(contract.setApprovalForAll(operator, approved, { from: caller, gas: 3000000 }));
+  } catch (error) {console.log(error); return RES.FAIL;} return RES.SUCC;
+}
+
+function do_isApprovedForAll(contract, owner, operator) {
+  return contract.isApprovedForAll(owner, operator);
+}
+
 function getBalances(contract_address) {
   var res_string = "";
   Erc20_CHF.balanceOf.call(me, function(error, balance) {
@@ -100,28 +134,57 @@ var RES = {
   FAIL: "fail",
   SUCC: "succ"
 }
-function fail(call){
-  assertEquals(call, RES.FAIL);
+function fail(call, reason){
+  assertEquals(call, RES.FAIL, reason);
 }
-function succ(call){ //xD
-  assertEquals(call, RES.SUCC);
+function succ(call, reason){ //xD
+  assertEquals(call, RES.SUCC, reason);
 }
 function assertEquals(actual, expected, reason) {
     if (actual !== expected) {
         formatError(actual, expected, reason);
+    } else {
+        formatSuccess(reason);
     }
 }
 function assertNotEquals(actual, expected, reason) {
     if (actual === expected) {
         formatError(actual, expected, reason);
+    } else {
+      formatSuccess(reason);
     }
 }
 
-function formatError(actual, expected, reason) {
-  throw "\nActual: " + actual.toString() + " type: " + typeof(actual) +
-    "\nExpected: " + expected.toString() + " type: " + typeof(expected) +
-    "\n" + (reason === "" ? "" : reason + " ... FAIL");
+function assertArrayEquals(actual, expected, reason) {
+  if (actual.length !== expected.length) {
+    formatArrayError(actual, expected, reason);
+  }
+
+  for (var i = 0; i < actual.length; i++) {
+    if (actual[i] !== expected[i]) {
+      formatArrayError(actual, expected, reason);
+    }
+  }
+
+  formatSuccess(reason);
 }
+
+function formatSuccess(reason) {
+  console.log("\x1b[32m" + " ✓ " + reason + "\x1b[0m");
+}
+
+function formatError(actual, expected, reason) {
+  throw "\x1b[31m\nActual: " + actual.toString() + " type: " + typeof(actual) +
+    "\nExpected: " + expected.toString() + " type: " + typeof(expected) +
+    "\n" + (reason === "" ? "" : reason + " ... FAIL\x1b[0m");
+}
+
+function formatArrayError(actual, expected, reason) {
+  var actualS = "[ " + actual.join(", ") + " ]";
+  var expectedS = "[ " + expected.join(", ") + " ]";
+  formatError(actualS, expectedS, reason);
+}
+
 function sleep(ms) {
     var date = new Date();
     var curDate = null;

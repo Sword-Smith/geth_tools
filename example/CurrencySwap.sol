@@ -1,4 +1,4 @@
-pragma solidity >=0.4.9;
+pragma solidity >=0.7.0;
 import "./Tmc4.sol";
 import "./DataFeed0.sol";
 

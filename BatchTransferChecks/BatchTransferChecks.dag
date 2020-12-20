@@ -1,0 +1,4 @@
+scale(20, 20,
+  both(transfer(_address_Erc20_DAI, 0),
+       both(transfer(_address_Erc20_DAI, 1),
+            transfer(_address_Erc20_DAI, 2))))
