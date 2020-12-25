@@ -22,32 +22,32 @@ assertEquals(Erc20_CHF.allowance(me, contract.address).toNumber(), 1000, "Allowa
 assertEquals(Erc20_CHF.balanceOf(me).toNumber(), 1000000, "Balance after approve still 1,000,000.");
 
 do_activate(contract, 7);
-assertEquals(contract.balanceOf(me, 0).toNumber(), 7, "PT0 balance 7 after activate(7)");
 assertEquals(contract.balanceOf(me, 1).toNumber(), 7, "PT1 balance 7 after activate(7)");
+assertEquals(contract.balanceOf(me, 2).toNumber(), 7, "PT2 balance 7 after activate(7)");
 assertEquals(Erc20_CHF.balanceOf(me).toNumber(), 999944, "SA balance correct after activate(7).");
 
 succ(do_burn(contract, 4), "Allow burning of 4 when balance is 7");
-assertEquals(contract.balanceOf(me, 0).toNumber(), 3, "PT0 balance 3 after burn(4)");
 assertEquals(contract.balanceOf(me, 1).toNumber(), 3, "PT1 balance 3 after burn(4)");
+assertEquals(contract.balanceOf(me, 2).toNumber(), 3, "PT2 balance 3 after burn(4)");
 assertEquals(Erc20_CHF.balanceOf(me).toNumber(), 999976, "SA balance correct after burn(4).");
 
 fail(do_burn(contract, 5), "Fail burning 5 when balance is 3");
 
 succ(do_mint(contract, 17), "Succeed in mint 17");
-assertEquals(contract.balanceOf(me, 0).toNumber(), 20, "PT0 balance 20 after mint(17)");
 assertEquals(contract.balanceOf(me, 1).toNumber(), 20, "PT1 balance 20 after mint(17)");
+assertEquals(contract.balanceOf(me, 2).toNumber(), 20, "PT2 balance 20 after mint(17)");
 assertEquals(Erc20_CHF.balanceOf(me).toNumber(), 999840, "SA balance 999,840 after mint(17)");
 
 fail(do_burn(contract, 30000), "Fail in burning more than lowest PT balance");
 
 // Send 1 PT0 token away and verify that this affects how much can be burned
-var partyToken0 = 0;
-do_transfer(contract, me, other, partyToken0, 1);
-assertEquals(contract.balanceOf(me, 0).toNumber(), 19, "PT0 balance 19 after transfer of 1");
-assertEquals(contract.balanceOf(me, 1).toNumber(), 20, "PT0 balance 20 after transfer of PT0");
+var partyToken1 = 1;
+do_transfer(contract, me, other, partyToken1, 1);
+assertEquals(contract.balanceOf(me, 1).toNumber(), 19, "PT1 balance 19 after transfer of 1");
+assertEquals(contract.balanceOf(me, 2).toNumber(), 20, "PT2 balance 20 after transfer of PT1");
 
 fail(do_burn(contract, 20), "Disallow burning of one more token than lowest balance");
 succ(do_burn(contract, 19), "Allow burning of lowest balance")
-assertEquals(contract.balanceOf(me, 0).toNumber(), 0, "PT0 balance 20 after burn(19)");
-assertEquals(contract.balanceOf(me, 1).toNumber(), 1, "PT1 balance 20 after burn(19)");
+assertEquals(contract.balanceOf(me, 1).toNumber(), 0, "PT0 balance 0 after burn(19)");
+assertEquals(contract.balanceOf(me, 2).toNumber(), 1, "PT1 balance 1 after burn(19)");
 assertEquals(Erc20_CHF.balanceOf(me).toNumber(), 999992, "SA balance 999,992 after burn(19)");
