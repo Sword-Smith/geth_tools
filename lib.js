@@ -1,6 +1,7 @@
 function l(a){
   console.log(a);
 }
+
 function get_transaction(b_A){
   t0_A = web3.eth.getTransaction(b_A);
   while (t0_A.blockNumber === null) {
@@ -18,7 +19,10 @@ function get_transaction(b_A){
   if (!statusCode) {
     throw b_A + " was reverted";
   }
+
+  return rec;
 }
+
 function do_set(dataFeed, num) {
   try {
     get_transaction(dataFeed.set(0, num));
@@ -140,6 +144,15 @@ function fail(call, reason){
 function succ(call, reason){ //xD
   assertEquals(call, RES.SUCC, reason);
 }
+
+function assert(condition, reason) {
+  if (condition) {
+    formatSuccess(reason);
+  } else {
+    formatError(condition, !condition, reason);
+  }
+}
+
 function assertEquals(actual, expected, reason) {
     if (actual !== expected) {
         formatError(actual, expected, reason);
