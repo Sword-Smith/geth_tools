@@ -1,0 +1,9 @@
+scale(20,(obs(int, _address_DataFeed1_, 0) + obs(int, _address_DataFeed1_, 0)),
+  if obs(bool, _address_DataFeed0_, 0) within seconds(1) then
+    both(
+      transfer(_address_Erc20_EUR, 1),
+      transfer(_address_Erc20_DAI, 1)
+    )
+  else
+    transfer(_address_Erc20_DAI, 2)
+)
