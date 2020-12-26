@@ -32,6 +32,22 @@ function get_balance(contract, address, index) {
   b_A = contract.balanceOf(address, index);
   return b_A;
 }
+function do_approve_on(approveAmount, erc20Contract, spenderAddress) {
+  try {
+    b_A = erc20Contract.approve(spenderAddress, approveAmount, {
+      from: me,
+      gas: 3000000
+    });
+    t0_A = web3.eth.getTransaction(b_A);
+    while (t0_A.blockNumber === null) {
+      t0_A = web3.eth.getTransaction(b_A);
+    }
+    erc20Contract.allowance.call(me, contract_address,
+      function(error, allowance) {
+        assertEquals(allowance, approveAmount, "Check allowance after correct approve call..");
+      });
+    } catch (error) {return RES.FAIL;} return RES.SUCC;
+}
 function do_approve(validApproveAmount, gas_amount, contract_address) {
   try {
     b_A = Erc20_CHF.approve(contract_address, validApproveAmount, {
