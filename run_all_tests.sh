@@ -14,3 +14,4 @@ set -e # Halt on error
 ./InputValidation/run_InputValidation.sh
 ./BettingExampleNew/run_BettingExampleNew.sh
 ./BettingExampleNewScale/run_BettingExampleNewScale.sh
+./PayChecks/run_PayChecks.sh
