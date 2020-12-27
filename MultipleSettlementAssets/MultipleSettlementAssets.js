@@ -20,23 +20,26 @@ assertEquals(contract.balanceOf(me, pt1).toNumber(), 0, "PartyToken 1 should hav
 assertEquals(contract.balanceOf(me, pt2).toNumber(), 0, "PartyToken 2 should have balance 0 before activation");
 assertEquals(Erc20_DAI.balanceOf(me).toNumber(), 20000, "Settlement asset should have balance 20,000 before activation");
 assertEquals(Erc20_EUR.balanceOf(me).toNumber(), 20000, "Settlement asset should have balance 20,000 before activation");
-assertEquals(Erc20_DAI.balanceOf(contract.address).toNumber(), 0, "DC Settlement asset balance be 0 before activation");
-assertEquals(Erc20_EUR.balanceOf(contract.address).toNumber(), 0, "DC Settlement asset balance be 0 before activation");
+assertEquals(Erc20_DAI.balanceOf(contract.address).toNumber(), 0, "DC Settlement asset DAI balance should be 0 before activation");
+assertEquals(Erc20_EUR.balanceOf(contract.address).toNumber(), 0, "DC Settlement asset EUR balance should be 0 before activation");
 
 succ(do_activate(contract, 5), "Allow activation with 5");
 
 assertEquals(contract.balanceOf(me, pt0).toNumber(), 5, "PartyToken 0 should have balance 5 after activation");
 assertEquals(contract.balanceOf(me, pt1).toNumber(), 5, "PartyToken 1 should have balance 5 after activation");
 assertEquals(contract.balanceOf(me, pt2).toNumber(), 5, "PartyToken 2 should have balance 5 after activation");
-assertEquals(Erc20_DAI.balanceOf(me).toNumber(), 19900, "Settlement asset should have balance 19,900 after activation");
-assertEquals(Erc20_DAI.balanceOf(contract.address).toNumber(), 100, "DC Settlement asset balance be 100");
+assertEquals(Erc20_DAI.balanceOf(me).toNumber(), 19900, "Settlement asset DAI should have balance 19,900 after activation");
+assertEquals(Erc20_EUR.balanceOf(me).toNumber(), 19900, "Settlement asset EUR should have balance 19,900 after activation");
+assertEquals(Erc20_DAI.balanceOf(contract.address).toNumber(), 100, "DC Settlement asset DAI balance should be 100");
+assertEquals(Erc20_DAI.balanceOf(contract.address).toNumber(), 100, "DC Settlement asset DAI balance should be 100");
 
 fail(do_mint(contract, 6), "Disallow minting that exceeds allowance");
 assertEquals(contract.balanceOf(me, pt0).toNumber(), 5, "PartyToken 0 balance should still be 5");
 assertEquals(contract.balanceOf(me, pt1).toNumber(), 5, "PartyToken 1 balance should still be 5");
 assertEquals(contract.balanceOf(me, pt2).toNumber(), 5, "PartyToken 2 balance should still be 5");
-assertEquals(Erc20_DAI.balanceOf(me).toNumber(), 19900, "Settlement asset should have balance 19,900 after activation");
-assertEquals(Erc20_DAI.balanceOf(contract.address).toNumber(), 100, "DC Settlement asset balance still be 100");
+assertEquals(Erc20_DAI.balanceOf(me).toNumber(), 19900, "Settlement asset DAI should have balance 19,900 after activation");
+assertEquals(Erc20_EUR.balanceOf(me).toNumber(), 19900, "Settlement asset EUR should have balance 19,900 after activation");
+assertEquals(Erc20_DAI.balanceOf(contract.address).toNumber(), 100, "DC Settlement asset balance DAI should still be 100");
 
 fail(do_mint(contract, 0), "Disallow minting of 0 although approval limit not yet reached");
 
@@ -44,15 +47,19 @@ succ(do_mint(contract, 2), "Allow mint of 2");
 assertEquals(contract.balanceOf(me, pt0).toNumber(), 7, "PartyToken 0 balance should now be 7");
 assertEquals(contract.balanceOf(me, pt1).toNumber(), 7, "PartyToken 1 balance should now be 7");
 assertEquals(contract.balanceOf(me, pt2).toNumber(), 7, "PartyToken 2 balance should now be 7");
-assertEquals(Erc20_DAI.balanceOf(me).toNumber(), 19860, "Settlement asset should have balance 19,860 after activation");
-assertEquals(Erc20_DAI.balanceOf(contract.address).toNumber(), 140, "DC Settlement asset balance be 140");
+assertEquals(Erc20_DAI.balanceOf(me).toNumber(), 19860, "Settlement asset DAI should have balance 19,860 after activation");
+assertEquals(Erc20_EUR.balanceOf(me).toNumber(), 19860, "Settlement asset EUR should have balance 19,860 after activation");
+assertEquals(Erc20_DAI.balanceOf(contract.address).toNumber(), 140, "DC Settlement asset DAI balance be 140");
+assertEquals(Erc20_EUR.balanceOf(contract.address).toNumber(), 140, "DC Settlement asset EUR balance be 140");
 
 succ(do_mint(contract, 3), "Allow mint of 3");
 assertEquals(contract.balanceOf(me, pt0).toNumber(), 10, "PartyToken 0 balance should now be 10");
 assertEquals(contract.balanceOf(me, pt1).toNumber(), 10, "PartyToken 1 balance should now be 10");
 assertEquals(contract.balanceOf(me, pt2).toNumber(), 10, "PartyToken 2 balance should now be 10");
-assertEquals(Erc20_DAI.balanceOf(me).toNumber(), 19800, "Settlement asset should have balance 19,860 after activation");
-assertEquals(Erc20_DAI.balanceOf(contract.address).toNumber(), 200, "DC Settlement asset balance be 200");
+assertEquals(Erc20_DAI.balanceOf(me).toNumber(), 19800, "Settlement asset DAI should have balance 19,860 after activation");
+assertEquals(Erc20_EUR.balanceOf(me).toNumber(), 19800, "Settlement asset EUR should have balance 19,860 after activation");
+assertEquals(Erc20_DAI.balanceOf(contract.address).toNumber(), 200, "DC Settlement asset DAI balance should be 200");
+assertEquals(Erc20_EUR.balanceOf(contract.address).toNumber(), 200, "DC Settlement asset EUR balance should be 200");
 
 fail(do_mint(contract, 1), "Disallow minting that would exceeed approval");
 fail(do_mint(contract, 0), "Disallow minting of 0");
@@ -63,22 +70,28 @@ fail(do_burn(contract, 0), "Disallow burning 0 PT even when some are available")
 assertEquals(contract.balanceOf(me, pt0).toNumber(), 10, "PartyToken 0 balance unaffected by failed zero-burn");
 assertEquals(contract.balanceOf(me, pt1).toNumber(), 10, "PartyToken 1 balance unaffected by failed zero-burn");
 assertEquals(contract.balanceOf(me, pt2).toNumber(), 10, "PartyToken 2 balance unaffected by failed zero-burn");
-assertEquals(Erc20_DAI.balanceOf(me).toNumber(), 19800, "Settlement asset unaffected by failed zero-burn");
-assertEquals(Erc20_DAI.balanceOf(contract.address).toNumber(), 200, "DC Settlement unaffected by 1st failed zero-burn");
+assertEquals(Erc20_DAI.balanceOf(me).toNumber(), 19800, "Settlement asset DAI unaffected by failed zero-burn");
+assertEquals(Erc20_EUR.balanceOf(me).toNumber(), 19800, "Settlement asset EUR unaffected by failed zero-burn");
+assertEquals(Erc20_DAI.balanceOf(contract.address).toNumber(), 200, "DC Settlement DAI unaffected by 1st failed zero-burn");
+assertEquals(Erc20_EUR.balanceOf(contract.address).toNumber(), 200, "DC Settlement EUR unaffected by 1st failed zero-burn");
 
 fail(do_burn(contract, 11), "Disallow burning more PT than available");
 assertEquals(contract.balanceOf(me, pt0).toNumber(), 10, "PartyToken 0 balance unaffected by failed burn");
 assertEquals(contract.balanceOf(me, pt1).toNumber(), 10, "PartyToken 1 balance unaffected by failed burn");
 assertEquals(contract.balanceOf(me, pt2).toNumber(), 10, "PartyToken 2 balance unaffected by failed burn");
-assertEquals(Erc20_DAI.balanceOf(me).toNumber(), 19800, "Settlement asset unaffected by failed burn");
-assertEquals(Erc20_DAI.balanceOf(contract.address).toNumber(), 200, "DC Settlement unaffected by failed burn");
+assertEquals(Erc20_DAI.balanceOf(me).toNumber(), 19800, "Settlement asset DAI unaffected by failed burn");
+assertEquals(Erc20_EUR.balanceOf(me).toNumber(), 19800, "Settlement asset EUR unaffected by failed burn");
+assertEquals(Erc20_DAI.balanceOf(contract.address).toNumber(), 200, "DC Settlement DAI unaffected by failed burn");
+assertEquals(Erc20_EUR.balanceOf(contract.address).toNumber(), 200, "DC Settlement EUR unaffected by failed burn");
 
 succ(do_burn(contract, 5), "Burn some party tokens");
 assertEquals(contract.balanceOf(me, pt0).toNumber(), 5, "PartyToken 0 balance is lower after 1st burn");
 assertEquals(contract.balanceOf(me, pt1).toNumber(), 5, "PartyToken 1 balance is lower after 1st burn");
 assertEquals(contract.balanceOf(me, pt2).toNumber(), 5, "PartyToken 2 balance is lower after 1st burn");
-assertEquals(Erc20_DAI.balanceOf(me).toNumber(), 19900, "Settlement asset is higher after 1st burn");
-assertEquals(Erc20_DAI.balanceOf(contract.address).toNumber(), 100, "DC Settlement is lower after 1st burn");
+assertEquals(Erc20_DAI.balanceOf(me).toNumber(), 19900, "Settlement asset DAI is higher after 1st burn 0000"); <--- FAILS here!!
+assertEquals(Erc20_EUR.balanceOf(me).toNumber(), 19900, "Settlement asset EUR is higher after 1st burn 1111");
+assertEquals(Erc20_DAI.balanceOf(contract.address).toNumber(), 100, "DC Settlement DAI is lower after 1st burn");
+assertEquals(Erc20_EUR.balanceOf(contract.address).toNumber(), 100, "DC Settlement EUR is lower after 1st burn");
 
 fail(do_burn(contract, 6), "Disallow burning more PT than available");
 assertEquals(contract.balanceOf(me, pt0).toNumber(), 5, "PartyToken 0 balance unaffected by failed 2nd burn");
