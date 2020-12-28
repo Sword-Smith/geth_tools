@@ -18,34 +18,63 @@ var partyToken1 = 1;
 var partyToken2 = 2;
 
 assertEquals(contract.balanceOf(me, partyToken1).toNumber(), 10, "PartyToken 1 should have balance 10 after activation");
-//assertEquals(contract.balanceOf(me, partyToken2).toNumber(), 10, "PartyToken 2 should have balance 10 after activation");
+assertEquals(contract.balanceOf(me, partyToken2).toNumber(), 10, "PartyToken 2 should have balance 10 after activation");
 
 // event TransferSingle(indexed _operator, indexed _from, indexed _to, _id, _value);
-var receipt1 = get_transaction(contract.safeTransferFrom(me, other, partyToken1, 6, 0));
 
-var events1 = receipt1.logs;
-assertEquals((events1 || []).length, 1, "1 event has been emitted");
+transferSingle_test_1();
 
-var event1 = receipt1.logs[0];
-assertEquals((event1.topics || []).length, 4, "4 topics have been emitted");
+function transferSingle_test_1() {
+    var receipt1 = get_transaction(contract.safeTransferFrom(me, other, partyToken1, 6, 0));
 
-var topics = event1.topics;
-var _signature = topics[0]; // SHA3("TransferSingle(...)")
-var _operator = topics[1];
-var _from = topics[2];
-var _to = topics[3];
+    assertEquals(contract.balanceOf(me, partyToken1).toNumber(), 4, "I should have 4 PT1 left after transferring 6 PT1 to other");
+    assertEquals(contract.balanceOf(other, partyToken1).toNumber(), 6, "Other should have 6 PT1 after having received them from me");
+    assertEquals((receipt1.logs || []).length, 1, "1 event has been emitted (TransferSingle of PT1)");
 
-assertAddressEquals(_operator, me, "_operator topic should be 'me'");
-assertAddressEquals(_from, me, "_from topic should also be 'me'");
-assertAddressEquals(_to, other, "_to topic should be 'other'")
+    var event1 = receipt1.logs[0];
+    assertEquals((event1.topics || []).length, 4, "4 topics have been emitted (TransferSingle of PT1)");
 
-function assertAddressEquals(actual, expected, reason) {
-    var avoidZeroPadding = new RegExp('^0x0*');
-    var actualNoPadding = actual.replace(avoidZeroPadding, '0x');
-    assertEquals(actualNoPadding, expected, reason);
+    var topics1 = event1.topics;
+    var _signature = topics1[0]; // SHA3("TransferSingle(...)")
+    var _operator = topics1[1];
+    var _from = topics1[2];
+    var _to = topics1[3];
+
+    // TODO: assertEquals(_signature, SHA3("TransferSingle(..."), "event signature correct");
+    assertAddressEquals(_operator, me, "_operator topic should be 'me'");
+    assertAddressEquals(_from, me, "_from topic should also be 'me'");
+    assertAddressEquals(_to, other, "_to topic should be 'other'")
+    assertEquals(
+        event1.data,
+        "0x00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000006",
+        "event data contains (1) Party Token ID 1 being transferred, (2) the amount 6 transfered");
 }
 
-assertEquals(
-    event1.data,
-    "0x00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000006",
-    "event data contains (1) the party token ID being transferred, (2) the amount transfered");
+transferSingle_test_2();
+
+function transferSingle_test_2() {
+    var receipt2 = get_transaction(contract.safeTransferFrom(me, other, partyToken2, 3, 0));
+
+    assertEquals(contract.balanceOf(me, partyToken2).toNumber(), 7, "I should have 7 PT2 left after transferring 3 PT2 to other");
+    assertEquals(contract.balanceOf(other, partyToken2).toNumber(), 3, "Other should have 3 PT2 after having received them from me");
+
+    assertEquals((receipt2.logs || []).length, 1, "1 event has been emitted (TransferSingle of PT2)");
+
+    var event2 = receipt2.logs[0];
+    assertEquals((event2.topics || []).length, 4, "4 topics have been emitted (TransferSingle of PT2)");
+
+    var topics2 = event2.topics;
+    var _signature = topics2[0]; // SHA3("TransferSingle(...)")
+    var _operator = topics2[1];
+    var _from = topics2[2];
+    var _to = topics2[3];
+
+    // TODO: assertEquals(_signature, SHA3("TransferSingle(..."), "event signature correct again");
+    assertAddressEquals(_operator, me, "_operator topic should be 'me' again");
+    assertAddressEquals(_from, me, "_from topic should also be 'me' again");
+    assertAddressEquals(_to, other, "_to topic should be 'other' again")
+    assertEquals(
+        event2.data,
+        "0x00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000003",
+        "event data contains (1) Party Token ID 2 being transferred, (2) the amount 3 transfered");
+}
