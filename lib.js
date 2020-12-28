@@ -17,6 +17,7 @@ function get_transaction(b_A){
   // rec.status should be "0x1" for success and "0x0" for failure
   var statusCode = parseInt(rec.status);
   if (!statusCode) {
+    console.log(b_A + " was reverted");
     throw b_A + " was reverted";
   }
 
