@@ -78,3 +78,32 @@ function transferSingle_test_2() {
         "0x00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000003",
         "event data contains (1) Party Token ID 2 being transferred, (2) the amount 3 transfered");
 }
+
+transferSingle_test_3();
+
+function transferSingle_test_3() {
+    var receipt3 = get_transaction(contract.safeTransferFrom(other, me, partyToken1, 5, 0, { from: other }));
+
+    assertEquals(contract.balanceOf(me, partyToken1).toNumber(), 9, "I should have 9 PT1 left after other transfers me 5 PT1 back");
+    assertEquals(contract.balanceOf(other, partyToken1).toNumber(), 1, "Other should have 1 PT1 after having transferring 5 PT1");
+
+    assertEquals((receipt3.logs || []).length, 1, "1 event has been emitted (TransferSingle of PT2)");
+
+    var event3 = receipt3.logs[0];
+    assertEquals((event3.topics || []).length, 4, "4 topics have been emitted (TransferSingle of PT2)");
+
+    var topics3 = event3.topics;
+    var _signature = topics3[0]; // SHA3("TransferSingle(...)")
+    var _operator = topics3[1];
+    var _from = topics3[2];
+    var _to = topics3[3];
+
+    // TODO: assertEquals(_signature, SHA3("TransferSingle(..."), "event signature correct again");
+    assertAddressEquals(_operator, other, "_operator topic should be 'other'");
+    assertAddressEquals(_from, other, "_from topic should also be 'other'");
+    assertAddressEquals(_to, me, "_to topic should be 'me'")
+    assertEquals(
+        event3.data,
+        "0x00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000005",
+        "event data contains (1) Party Token ID 1 being transferred, (2) the amount 5 transfered");
+}
