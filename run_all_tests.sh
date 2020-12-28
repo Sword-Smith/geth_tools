@@ -15,3 +15,4 @@ set -e # Halt on error
 ./BettingExampleNew/run_BettingExampleNew.sh
 ./BettingExampleNewScale/run_BettingExampleNewScale.sh
 ./PayChecks/run_PayChecks.sh
+./EventChecks/run_EventChecks.sh

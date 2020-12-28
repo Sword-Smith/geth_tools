@@ -259,7 +259,7 @@ if ( $file_ext eq "sol" ){
     die "Invalid file name, first letter must be capitalized!" unless $basename =~ /^[[:upper:]]/;
     $compile_output = `solc -o $outdir --abi --bin --overwrite $precompiled_fn --allow-paths *,;`;
 } elsif ( $file_ext ~~ [qw(bahr dag)] ){
-    $compile_output = `daggerc -o $outdir $precompiled_fn;`;
+    $compile_output = `daggerc -d -o $outdir $precompiled_fn;`;
 } else {
     die "This program only supports .sol, .dag, and .bahr file extensions";
 }
