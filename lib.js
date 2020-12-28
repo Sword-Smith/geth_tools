@@ -198,6 +198,12 @@ function assertArrayEquals(actual, expected, reason) {
   formatSuccess(reason);
 }
 
+function assertAddressEquals(actual, expected, reason) {
+  var avoidZeroPadding = new RegExp('^0x0*');
+  var actualNoPadding = actual.replace(avoidZeroPadding, '0x');
+  assertEquals(actualNoPadding, expected, reason);
+}
+
 function formatSuccess(reason) {
   console.log("\x1b[32m" + " ✓ " + reason + "\x1b[0m");
 }
