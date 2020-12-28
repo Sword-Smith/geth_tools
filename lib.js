@@ -79,7 +79,13 @@ function do_pay_a_bit(contract, contract_address) {
 
 function do_pay(contract) {
   try {
-    get_transaction(pay = contract.pay());
+    get_transaction(contract.pay());
+  } catch (error) {return RES.FAIL;} return RES.SUCC;
+}
+
+function do_pay_implicit(contract, caller) {
+  try {
+    get_transaction(contract.pay({from: caller, gas: 3000000}));
   } catch (error) {return RES.FAIL;} return RES.SUCC;
 }
 
