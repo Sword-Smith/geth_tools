@@ -152,7 +152,7 @@ assertEquals(Erc20_EUR.balanceOf(contract.address).toNumber(), 0, "DC Settlement
 
 // Approve on other SA (EUR) and verify that minting is now possible
 do_approve_on(200, Erc20_DAI, contract.address);
-succ(do_mint(contract, 10), "Allow the minting of 10 additional PT pairs for balance(PT1) < balance(PT2) tests");
+succ(do_mint(contract, 10), "Allow the minting of 10 additional PTs for balance(PT1) < balance(PT2) tests");
 succ(do_transfer(contract, me, other, pt1, 5), "Allow me to transfer away 5 PT1s");
 assertEquals(contract.balanceOf(me, pt0).toNumber(), 10, "PartyToken 0 is 10 after mint of 10");
 assertEquals(contract.balanceOf(me, pt1).toNumber(), 5, "PartyToken 1 balance 5 after mint of 10 and transferred away 5");
@@ -209,7 +209,7 @@ succ(do_transfer(contract, me, other, pt3, 5), "Allow me to get rid of last PT3s
 
 do_approve_on(200, Erc20_DAI, contract.address);
 do_approve_on(200, Erc20_EUR, contract.address);
-succ(do_mint(contract, 10), "Allow the minting of 10 additional PT pairs for balance(PT1) > balance(PT2) tests");
+succ(do_mint(contract, 10), "Allow the minting of 10 additional PTs for balance(PT1) > balance(PT2) tests");
 succ(do_transfer(contract, me, other, pt2, 5), "Allow me to transfer away 5 PT2s, b_PT1 > b_PT2");
 assertEquals(contract.balanceOf(me, pt0).toNumber(), 10, "PartyToken 0 balance is 10 after mint of 10, b_PT1 > b_PT2");
 assertEquals(contract.balanceOf(me, pt1).toNumber(), 10, "PartyToken 1 balance is 10 after mint of 10, b_PT1 > b_PT2");
@@ -218,43 +218,232 @@ assertEquals(contract.balanceOf(me, pt3).toNumber(), 10, "PartyToken 3 balance i
 assertEquals(Erc20_DAI.balanceOf(contract.address).toNumber(), 300, "DC Settlement (DAI) higher after successful mint, b_PT1 > b_PT2");
 assertEquals(Erc20_EUR.balanceOf(contract.address).toNumber(), 300, "DC Settlement (EUR) higher after successful mint, b_PT1 > b_PT2");
 
-// Verify that pay works correctly
-succ(do_transfer(contract, me, other, pt2, 4), "Allow me to transfer away 4 PT2s");
+// Holds some of each token -- get payout of correct amount
+// In this contract PT1 and PT2 are in the money. PT1 gets 20 EUR per token, PT2 gets 20 DAI per token
+succ(do_transfer(contract, me, other, pt2, 4), "Allow me to transfer away 4 PT2s, #1");
+assertEquals(contract.balanceOf(me, pt0).toNumber(), 10, "PartyToken 0 balance is 10 before successful pay(), #1");
+assertEquals(contract.balanceOf(me, pt1).toNumber(), 10, "PartyToken 1 balance is 10 before successful pay(), #1");
+assertEquals(contract.balanceOf(me, pt2).toNumber(), 1, "PartyToken 2 balance is 1 before successful pay(), #1");
+assertEquals(contract.balanceOf(me, pt3).toNumber(), 10, "PartyToken 3 balance is 10 before successful pay(), #1");
+assertEquals(Erc20_DAI.balanceOf(me).toNumber(), 19700, "My SA (DAI) balance before successful pay(), #1");
+assertEquals(Erc20_EUR.balanceOf(me).toNumber(), 19700, "My SA (EUR) balance before successful pay(), #1")
 
-assertEquals(contract.balanceOf(me, pt0).toNumber(), 10, "PartyToken 0 balance is 10 before successful pay()");
-assertEquals(contract.balanceOf(me, pt1).toNumber(), 10, "PartyToken 1 balance is 10 before successful pay()");
-assertEquals(contract.balanceOf(me, pt2).toNumber(), 1, "PartyToken 2 balance is 1 before successful pay()");
-assertEquals(contract.balanceOf(me, pt3).toNumber(), 10, "PartyToken 3 balance is 10 before successful pay()");
+succ(do_pay_implicit(contract, me), "Can execute pay, #1");
+assertEquals(contract.balanceOf(me, pt1).toNumber(), 0, "PartyToken 1 balance is 0 after successful pay(), #1");
+assertEquals(contract.balanceOf(me, pt2).toNumber(), 0, "PartyToken 2 balance is 0 after successful pay(), #1");
+assertEquals(contract.balanceOf(me, pt3).toNumber(), 0, "PartyToken 3 balance is 0 after successful pay(), #1");
+assertEquals(contract.balanceOf(me, pt0).toNumber(), 0, "PartyToken 0 balance is 0 after successful pay(), #1");
+assertEquals(Erc20_DAI.balanceOf(me).toNumber(), 19720, "My SA (DAI) balance unchanged after successful pay(), #1");
+assertEquals(Erc20_EUR.balanceOf(me).toNumber(), 19900, "My SA (EUR) balance 200 higher after successful pay(), #1");
+assertEquals(Erc20_DAI.balanceOf(contract.address).toNumber(), 280, "DC Settlement (DAI) 280 after successful pay(), #1");
+assertEquals(Erc20_EUR.balanceOf(contract.address).toNumber(), 100, "DC Settlement (EUR) 100 after successful pay(), #1");
 
-// do_pay(contract);
-succ(do_pay_implicit(contract, me), "Can execute pay");
-
-assertEquals(contract.balanceOf(me, pt1).toNumber(), 0, "PartyToken 1 balance is 0 after successful pay()");
-assertEquals(contract.balanceOf(me, pt2).toNumber(), 0, "PartyToken 2 balance is 0 after successful pay()");
-assertEquals(contract.balanceOf(me, pt3).toNumber(), 0, "PartyToken 3 balance is 0 after successful pay()");
-assertEquals(contract.balanceOf(me, pt0).toNumber(), 0, "PartyToken 0 balance is 0 after successful pay()");
-assertEquals(Erc20_DAI.balanceOf(me).toNumber(), 19720, "My SA (DAI) balance unchanged after successful pay()");
-assertEquals(Erc20_EUR.balanceOf(me).toNumber(), 19900, "My SA (EUR) balance 200 higher after successful pay()");
-assertEquals(Erc20_DAI.balanceOf(contract.address).toNumber(), 280, "DC Settlement (DAI) 280 after successful pay()");
-assertEquals(Erc20_EUR.balanceOf(contract.address).toNumber(), 100, "DC Settlement (EUR) 100 after successful pay()");
-
+// Holds 10 of each token -- get payout of correct amount
 // mint, check balance, pay, check balance
 do_approve_on(200, Erc20_DAI, contract.address);
 do_approve_on(200, Erc20_EUR, contract.address);
-succ(do_mint(contract, 10), "Allow the minting of 10 additional PT pairs for balance(PT1) > balance(PT2) tests, yay.");
+succ(do_mint(contract, 10), "Allow the minting of 10 additional PTs for balance(PT1) > balance(PT2) tests, yay., #2");
+assertEquals(contract.balanceOf(me, pt0).toNumber(), 10, "PartyToken 0 balance is 10 after successful mint(), #2");
+assertEquals(contract.balanceOf(me, pt1).toNumber(), 10, "PartyToken 1 balance is 10 after successful mint(), #2");
+assertEquals(contract.balanceOf(me, pt2).toNumber(), 10, "PartyToken 2 balance is 10 after successful mint(), #2");
+assertEquals(contract.balanceOf(me, pt3).toNumber(), 10, "PartyToken 3 balance is 10 after successful mint(), #2");
+assertEquals(Erc20_DAI.balanceOf(me).toNumber(), 19520, "My SA (DAI) balance 200 lower after successful mint(), #2");
+assertEquals(Erc20_EUR.balanceOf(me).toNumber(), 19700, "My SA (EUR) balance 200 lower after successful mint(), #2");
+assertEquals(Erc20_DAI.balanceOf(contract.address).toNumber(), 480, "DC Settlement (DAI) 280 after successful pay(), #2");
+assertEquals(Erc20_EUR.balanceOf(contract.address).toNumber(), 300, "DC Settlement (EUR) 100 after successful pay(), #2");
 
-assertEquals(contract.balanceOf(me, pt0).toNumber(), 10, "PartyToken 0 balance is 10 after successful mint()");
-assertEquals(contract.balanceOf(me, pt1).toNumber(), 10, "PartyToken 1 balance is 10 after successful mint()");
-assertEquals(contract.balanceOf(me, pt2).toNumber(), 10, "PartyToken 2 balance is 10 after successful mint()");
-assertEquals(contract.balanceOf(me, pt3).toNumber(), 10, "PartyToken 3 balance is 10 after successful mint()");
-assertEquals(Erc20_DAI.balanceOf(me).toNumber(), 19520, "My SA (DAI) balance 200 lower after successful mint()");
-assertEquals(Erc20_EUR.balanceOf(me).toNumber(), 19700, "My SA (EUR) balance 200 lower after successful mint()");
+succ(do_pay(contract), "Can execute pay, 2nd time, #2");
+assertEquals(contract.balanceOf(me, pt0).toNumber(), 0, "PartyToken 0 balance is 0 after successful pay() again, #2");
+assertEquals(contract.balanceOf(me, pt1).toNumber(), 0, "PartyToken 1 balance is 0 after successful pay() again, #2");
+assertEquals(contract.balanceOf(me, pt2).toNumber(), 0, "PartyToken 2 balance is 0 after successful pay() again, #2");
+assertEquals(contract.balanceOf(me, pt3).toNumber(), 0, "PartyToken 3 balance is 0 after successful pay() again, #2");
+assertEquals(Erc20_DAI.balanceOf(me).toNumber(), 19720, "My SA (DAI) balance 200 higher after successful pay() again, #2");
+assertEquals(Erc20_EUR.balanceOf(me).toNumber(), 19900, "My SA (EUR) balance 200 higher after successful pay() again, #2");
+assertEquals(Erc20_DAI.balanceOf(contract.address).toNumber(), 280, "DC Settlement (DAI) 280 after successful pay(), #2");
+assertEquals(Erc20_EUR.balanceOf(contract.address).toNumber(), 100, "DC Settlement (EUR) 100 after successful pay(), #2");
 
-succ(do_pay(contract));
+// Only holds PT1 -- get payout of correct amount
+// mint, transfer, check balance, pay, check balance
+// In this contract PT1 and PT2 are in the money. PT1 gets 20 EUR, PT2 gets DAI
+do_approve_on(200, Erc20_DAI, contract.address);
+do_approve_on(200, Erc20_EUR, contract.address);
+succ(do_mint(contract, 10), "Allow the minting of 10 additional PTs, #3");
+succ(do_transfer(contract, me, other, pt0, 10), "Allow me to transfer away 10 PT0s, #3");
+succ(do_transfer(contract, me, other, pt1, 3), "Allow me to transfer away 3 PT1s, #3");
+succ(do_transfer(contract, me, other, pt2, 10), "Allow me to transfer away 10 PT2s, #3");
+succ(do_transfer(contract, me, other, pt3, 10), "Allow me to transfer away 10 PT3s, #3");
+assertEquals(contract.balanceOf(me, pt0).toNumber(), 0, "PartyToken 0 balance is 0 after successful mint() and transfer, #3");
+assertEquals(contract.balanceOf(me, pt1).toNumber(), 7, "PartyToken 1 balance is 7 after successful mint() and transfer, #3");
+assertEquals(contract.balanceOf(me, pt2).toNumber(), 0, "PartyToken 2 balance is 0 after successful mint() and transfer, #3");
+assertEquals(contract.balanceOf(me, pt3).toNumber(), 0, "PartyToken 3 balance is 0 after successful mint() and transfer, #3");
+assertEquals(Erc20_DAI.balanceOf(me).toNumber(), 19520, "My SA (DAI) balance 200 lower after successful mint(), #3");
+assertEquals(Erc20_EUR.balanceOf(me).toNumber(), 19700, "My SA (EUR) balance 200 lower after successful mint(), #3");
 
-assertEquals(contract.balanceOf(me, pt0).toNumber(), 0, "PartyToken 0 balance is 0 after successful pay() again");
-assertEquals(contract.balanceOf(me, pt1).toNumber(), 0, "PartyToken 1 balance is 0 after successful pay() again");
-assertEquals(contract.balanceOf(me, pt2).toNumber(), 0, "PartyToken 2 balance is 0 after successful pay() again");
-assertEquals(contract.balanceOf(me, pt3).toNumber(), 0, "PartyToken 3 balance is 0 after successful pay() again");
-assertEquals(Erc20_DAI.balanceOf(me).toNumber(), 19720, "My SA (DAI) balance 200 higher after successful pay() again");
-assertEquals(Erc20_EUR.balanceOf(me).toNumber(), 19900, "My SA (EUR) balance 200 higher after successful pay() again");
+succ(do_pay(contract), "Can execute pay, #3");
+assertEquals(contract.balanceOf(me, pt0).toNumber(), 0, "PartyToken 0 balance is 0 after successful pay(), #3");
+assertEquals(contract.balanceOf(me, pt1).toNumber(), 0, "PartyToken 1 balance is 0 after successful pay(), #3");
+assertEquals(contract.balanceOf(me, pt2).toNumber(), 0, "PartyToken 2 balance is 0 after successful pay(), #3");
+assertEquals(contract.balanceOf(me, pt3).toNumber(), 0, "PartyToken 3 balance is 0 after successful pay(), #3");
+assertEquals(Erc20_DAI.balanceOf(me).toNumber(), 19520, "My SA (DAI) balance is unchanged after successful pay(), #3");
+assertEquals(Erc20_EUR.balanceOf(me).toNumber(), 19840, "My SA (EUR) balance 140 higher after successful pay(), #3");
+
+// Only holds PT3 -- get no payout
+// mint, transfer, check balance, pay, check balance,
+// In this contract PT1 and PT2 are in the money. PT1 gets 20 EUR, PT2 gets DAI
+do_approve_on(200, Erc20_DAI, contract.address);
+do_approve_on(200, Erc20_EUR, contract.address);
+succ(do_mint(contract, 10), "Allow the minting of 10 additional PTs, #4");
+succ(do_transfer(contract, me, other, pt0, 10), "Allow me to transfer away 10 PT0s, #4");
+succ(do_transfer(contract, me, other, pt1, 10), "Allow me to transfer away 10 PT1s, #4");
+succ(do_transfer(contract, me, other, pt2, 10), "Allow me to transfer away 10 PT2s, #4");
+succ(do_transfer(contract, me, other, pt3, 1), "Allow me to transfer away 1 PT3s, #4");
+assertEquals(contract.balanceOf(me, pt0).toNumber(), 0, "PartyToken 0 balance is 0 after successful mint() and transfer, #4");
+assertEquals(contract.balanceOf(me, pt1).toNumber(), 0, "PartyToken 1 balance is 7 after successful mint() and transfer, #4");
+assertEquals(contract.balanceOf(me, pt2).toNumber(), 0, "PartyToken 2 balance is 0 after successful mint() and transfer, #4");
+assertEquals(contract.balanceOf(me, pt3).toNumber(), 9, "PartyToken 3 balance is 0 after successful mint() and transfer, #4");
+assertEquals(Erc20_DAI.balanceOf(me).toNumber(), 19320, "My SA (DAI) balance 200 lower after successful mint(), #4");
+assertEquals(Erc20_EUR.balanceOf(me).toNumber(), 19640, "My SA (EUR) balance 200 lower after successful mint(), #4");
+
+succ(do_pay(contract), "Can execute pay, #4");
+assertEquals(contract.balanceOf(me, pt0).toNumber(), 0, "PartyToken 0 balance is 0 after successful pay(), #4");
+assertEquals(contract.balanceOf(me, pt1).toNumber(), 0, "PartyToken 1 balance is 0 after successful pay(), #4");
+assertEquals(contract.balanceOf(me, pt2).toNumber(), 0, "PartyToken 2 balance is 0 after successful pay(), #4");
+assertEquals(contract.balanceOf(me, pt3).toNumber(), 0, "PartyToken 3 balance is 0 after successful pay(), #4");
+assertEquals(Erc20_DAI.balanceOf(me).toNumber(), 19320, "My SA (DAI) balance is unchanged after successful pay(), #4");
+assertEquals(Erc20_EUR.balanceOf(me).toNumber(), 19640, "My SA (EUR) balance is unchanged after successful pay(), #4");
+
+// Only holds PT0 -- get no payout
+// mint, transfer, check balance, pay, check balance,
+// In this contract PT1 and PT2 are in the money. PT1 gets 20 EUR, PT2 gets DAI
+do_approve_on(200, Erc20_DAI, contract.address);
+do_approve_on(200, Erc20_EUR, contract.address);
+succ(do_mint(contract, 10), "Allow the minting of 10 additional PTs, #5");
+succ(do_transfer(contract, me, other, pt0, 2), "Allow me to transfer away 2 PT0s, #5");
+succ(do_transfer(contract, me, other, pt1, 10), "Allow me to transfer away 10 PT1s, #5");
+succ(do_transfer(contract, me, other, pt2, 10), "Allow me to transfer away 10 PT2s, #5");
+succ(do_transfer(contract, me, other, pt3, 10), "Allow me to transfer away 10 PT3s, #5");
+assertEquals(contract.balanceOf(me, pt0).toNumber(), 8, "PartyToken 0 balance is 8 after successful mint() and transfer, #5");
+assertEquals(contract.balanceOf(me, pt1).toNumber(), 0, "PartyToken 1 balance is 0 after successful mint() and transfer, #5");
+assertEquals(contract.balanceOf(me, pt2).toNumber(), 0, "PartyToken 2 balance is 0 after successful mint() and transfer, #5");
+assertEquals(contract.balanceOf(me, pt3).toNumber(), 0, "PartyToken 3 balance is 0 after successful mint() and transfer, #5");
+assertEquals(Erc20_DAI.balanceOf(me).toNumber(), 19120, "My SA (DAI) balance 200 lower after successful mint(), #5");
+assertEquals(Erc20_EUR.balanceOf(me).toNumber(), 19440, "My SA (EUR) balance 200 lower after successful mint(), #5");
+
+succ(do_pay(contract), "Can execute pay, #5");
+assertEquals(contract.balanceOf(me, pt0).toNumber(), 0, "PartyToken 0 balance is 0 after successful pay(), #5");
+assertEquals(contract.balanceOf(me, pt1).toNumber(), 0, "PartyToken 1 balance is 0 after successful pay(), #5");
+assertEquals(contract.balanceOf(me, pt2).toNumber(), 0, "PartyToken 2 balance is 0 after successful pay(), #5");
+assertEquals(contract.balanceOf(me, pt3).toNumber(), 0, "PartyToken 3 balance is 0 after successful pay(), #5");
+assertEquals(Erc20_DAI.balanceOf(me).toNumber(), 19120, "My SA (DAI) balance is unchanged after successful pay(), #5");
+assertEquals(Erc20_EUR.balanceOf(me).toNumber(), 19440, "My SA (EUR) balance is unchanged after successful pay(), #5");
+
+// Only holds PT2 -- get payout
+// mint, transfer, check balance, pay, check balance,
+// In this contract PT1 and PT2 are in the money. PT1 gets 20 EUR, PT2 gets DAI
+do_approve_on(300, Erc20_DAI, contract.address);
+do_approve_on(300, Erc20_EUR, contract.address);
+succ(do_mint(contract, 15), "Allow the minting of 15 additional PTs, #6");
+succ(do_transfer(contract, me, other, pt0, 15), "Allow me to transfer away 15 PT0s, #6");
+succ(do_transfer(contract, me, other, pt1, 15), "Allow me to transfer away 15 PT1s, #6");
+succ(do_transfer(contract, me, other, pt2, 1), "Allow me to transfer away 1 PT2s, #6");
+succ(do_transfer(contract, me, other, pt3, 15), "Allow me to transfer away 15 PT3s, #6");
+assertEquals(contract.balanceOf(me, pt0).toNumber(), 0, "PartyToken 0 balance is 0 after successful mint() and transfer, #6");
+assertEquals(contract.balanceOf(me, pt1).toNumber(), 0, "PartyToken 1 balance is 0 after successful mint() and transfer, #6");
+assertEquals(contract.balanceOf(me, pt2).toNumber(), 14, "PartyToken 2 balance is 14 after successful mint() and transfer, #6");
+assertEquals(contract.balanceOf(me, pt3).toNumber(), 0, "PartyToken 3 balance is 0 after successful mint() and transfer, #6");
+assertEquals(Erc20_DAI.balanceOf(me).toNumber(), 18820, "My SA (DAI) balance 300 lower after successful mint(), #6");
+assertEquals(Erc20_EUR.balanceOf(me).toNumber(), 19140, "My SA (EUR) balance 300 lower after successful mint(), #6");
+
+succ(do_pay(contract), "Can execute pay, #6");
+assertEquals(contract.balanceOf(me, pt0).toNumber(), 0, "PartyToken 0 balance is 0 after successful pay(), #6");
+assertEquals(contract.balanceOf(me, pt1).toNumber(), 0, "PartyToken 1 balance is 0 after successful pay(), #6");
+assertEquals(contract.balanceOf(me, pt2).toNumber(), 0, "PartyToken 2 balance is 0 after successful pay(), #6");
+assertEquals(contract.balanceOf(me, pt3).toNumber(), 0, "PartyToken 3 balance is 0 after successful pay(), #6");
+assertEquals(Erc20_DAI.balanceOf(me).toNumber(), 19100, "My SA (DAI) balance is increased by 280 after successful pay(), #6");
+assertEquals(Erc20_EUR.balanceOf(me).toNumber(), 19140, "My SA (EUR) balance is unchanged after successful pay(), #6");
+
+// Hold PT1 and PT3 -- get payout for PT1
+// mint, transfer, check balance, pay, check balance,
+// In this contract PT1 and PT2 are in the money. PT1 gets 20 EUR, PT2 gets DAI
+do_approve_on(300, Erc20_DAI, contract.address);
+do_approve_on(300, Erc20_EUR, contract.address);
+succ(do_mint(contract, 15), "Allow the minting of 15 additional PTs, #7");
+succ(do_transfer(contract, me, other, pt0, 15), "Allow me to transfer away 15 PT0s, #7");
+succ(do_transfer(contract, me, other, pt1, 3), "Allow me to transfer away 15 PT1s, #7");
+succ(do_transfer(contract, me, other, pt2, 15), "Allow me to transfer away 15 PT2s, #7");
+assertEquals(contract.balanceOf(me, pt0).toNumber(), 0, "PartyToken 0 balance is 0 after successful mint() and transfer, #7");
+assertEquals(contract.balanceOf(me, pt1).toNumber(), 12, "PartyToken 1 balance is 12 after successful mint() and transfer, #7");
+assertEquals(contract.balanceOf(me, pt2).toNumber(), 0, "PartyToken 2 balance is 0 after successful mint() and transfer, #7");
+assertEquals(contract.balanceOf(me, pt3).toNumber(), 15, "PartyToken 3 balance is 0 after successful mint() and transfer, #7");
+assertEquals(Erc20_DAI.balanceOf(me).toNumber(), 18800, "My SA (DAI) balance 300 lower after successful mint(), #7");
+assertEquals(Erc20_EUR.balanceOf(me).toNumber(), 18840, "My SA (EUR) balance 300 lower after successful mint(), #7");
+assertEquals(Erc20_DAI.balanceOf(contract.address).toNumber(), 1200, "DC Settlement (DAI) before pay, #7");
+assertEquals(Erc20_EUR.balanceOf(contract.address).toNumber(), 1160, "DC Settlement (EUR) before pay, #7");
+
+succ(do_pay(contract), "Can execute pay, #7");
+assertEquals(contract.balanceOf(me, pt0).toNumber(), 0, "PartyToken 0 balance is 0 after successful pay(), #7");
+assertEquals(contract.balanceOf(me, pt1).toNumber(), 0, "PartyToken 1 balance is 0 after successful pay(), #7");
+assertEquals(contract.balanceOf(me, pt2).toNumber(), 0, "PartyToken 2 balance is 0 after successful pay(), #7");
+assertEquals(contract.balanceOf(me, pt3).toNumber(), 0, "PartyToken 3 balance is 0 after successful pay(), #7");
+assertEquals(Erc20_DAI.balanceOf(me).toNumber(), 18800, "My SA (DAI) balance unchanged successful pay(), #7");
+assertEquals(Erc20_EUR.balanceOf(me).toNumber(), 19080, "My SA (EUR) balance is 240 higher after successful pay(), #7");
+assertEquals(Erc20_DAI.balanceOf(contract.address).toNumber(), 1200, "DC Settlement (DAI) after pay, #7");
+assertEquals(Erc20_EUR.balanceOf(contract.address).toNumber(), 920, "DC Settlement (EUR) after pay, #7");
+
+// Hold PT0 and PT2 -- get payout for PT2
+// mint, transfer, check balance, pay, check balance,
+// In this contract PT1 and PT2 are in the money. PT1 gets 20 EUR, PT2 gets DAI
+do_approve_on(400, Erc20_DAI, contract.address);
+do_approve_on(400, Erc20_EUR, contract.address);
+succ(do_mint(contract, 20), "Allow the minting of 20 additional PTs, #8");
+succ(do_transfer(contract, me, other, pt0, 1), "Allow me to transfer away 1 PT0s, #8");
+succ(do_transfer(contract, me, other, pt1, 20), "Allow me to transfer away 20 PT1s, #8");
+succ(do_transfer(contract, me, other, pt2, 2), "Allow me to transfer away 2 PT2s, #8");
+succ(do_transfer(contract, me, other, pt3, 20), "Allow me to transfer away 20 PT3s, #8");
+assertEquals(contract.balanceOf(me, pt0).toNumber(), 19, "PartyToken 0 balance is 19 after successful mint() and transfer, #8");
+assertEquals(contract.balanceOf(me, pt1).toNumber(), 0, "PartyToken 1 balance is 0 after successful mint() and transfer, #8");
+assertEquals(contract.balanceOf(me, pt2).toNumber(), 18, "PartyToken 2 balance is 18 after successful mint() and transfer, #8");
+assertEquals(contract.balanceOf(me, pt3).toNumber(), 0, "PartyToken 3 balance is 0 after successful mint() and transfer, #8");
+assertEquals(Erc20_DAI.balanceOf(me).toNumber(), 18400, "My SA (DAI) balance 400 lower after successful mint(), #8");
+assertEquals(Erc20_EUR.balanceOf(me).toNumber(), 18680, "My SA (EUR) balance 400 lower after successful mint(), #8");
+assertEquals(Erc20_DAI.balanceOf(contract.address).toNumber(), 1600, "DC Settlement (DAI) before pay, #8");
+assertEquals(Erc20_EUR.balanceOf(contract.address).toNumber(), 1320, "DC Settlement (EUR) before pay, #8");
+
+succ(do_pay(contract), "Can execute pay, #8");
+assertEquals(contract.balanceOf(me, pt0).toNumber(), 0, "PartyToken 0 balance is 0 after successful pay(), #8");
+assertEquals(contract.balanceOf(me, pt1).toNumber(), 0, "PartyToken 1 balance is 0 after successful pay(), #8");
+assertEquals(contract.balanceOf(me, pt2).toNumber(), 0, "PartyToken 2 balance is 0 after successful pay(), #8");
+assertEquals(contract.balanceOf(me, pt3).toNumber(), 0, "PartyToken 3 balance is 0 after successful pay(), #8");
+assertEquals(Erc20_DAI.balanceOf(me).toNumber(), 18760, "My SA (DAI) balance is 360 higher after successful pay(), #8");
+assertEquals(Erc20_EUR.balanceOf(me).toNumber(), 18680, "My SA (EUR) balance is unchanged after successful pay(), #8");
+assertEquals(Erc20_DAI.balanceOf(contract.address).toNumber(), 1240, "DC Settlement (DAI) after pay, #8");
+assertEquals(Erc20_EUR.balanceOf(contract.address).toNumber(), 1320, "DC Settlement (EUR) after pay, #8");
+
+// Hold PT1 and PT2 -- get payout for PT1 and PT2
+// mint, transfer, check balance, pay, check balance,
+// In this contract PT1 and PT2 are in the money. PT1 gets 20 EUR, PT2 gets DAI
+do_approve_on(420, Erc20_DAI, contract.address);
+do_approve_on(420, Erc20_EUR, contract.address);
+succ(do_mint(contract, 21), "Allow the minting of 21 additional PTs, #9");
+succ(do_transfer(contract, me, other, pt0, 21), "Allow me to transfer away 21 PT0s, #9");
+succ(do_transfer(contract, me, other, pt1, 1), "Allow me to transfer away 1 PT1s, #9");
+succ(do_transfer(contract, me, other, pt2, 2), "Allow me to transfer away 2 PT2s, #9");
+succ(do_transfer(contract, me, other, pt3, 21), "Allow me to transfer away 21 PT3s, #9");
+assertEquals(contract.balanceOf(me, pt0).toNumber(), 0, "PartyToken 0 balance is 0 after successful mint() and transfer, #9");
+assertEquals(contract.balanceOf(me, pt1).toNumber(), 20, "PartyToken 1 balance is 20 after successful mint() and transfer, #9");
+assertEquals(contract.balanceOf(me, pt2).toNumber(), 19, "PartyToken 2 balance is 19 after successful mint() and transfer, #9");
+assertEquals(contract.balanceOf(me, pt3).toNumber(), 0, "PartyToken 3 balance is 0 after successful mint() and transfer, #9");
+assertEquals(Erc20_DAI.balanceOf(me).toNumber(), 18340, "My SA (DAI) balance 420 lower after successful mint(), #9");
+assertEquals(Erc20_EUR.balanceOf(me).toNumber(), 18260, "My SA (EUR) balance 420 lower after successful mint(), #9");
+assertEquals(Erc20_DAI.balanceOf(contract.address).toNumber(), 1660, "DC Settlement (DAI) before pay, #9");
+assertEquals(Erc20_EUR.balanceOf(contract.address).toNumber(), 1740, "DC Settlement (EUR) before pay, #9");
+
+succ(do_pay(contract), "Can execute pay, #9");
+assertEquals(contract.balanceOf(me, pt0).toNumber(), 0, "PartyToken 0 balance is 0 after successful pay(), #9");
+assertEquals(contract.balanceOf(me, pt1).toNumber(), 0, "PartyToken 1 balance is 0 after successful pay(), #9");
+assertEquals(contract.balanceOf(me, pt2).toNumber(), 0, "PartyToken 2 balance is 0 after successful pay(), #9");
+assertEquals(contract.balanceOf(me, pt3).toNumber(), 0, "PartyToken 3 balance is 0 after successful pay(), #9");
+assertEquals(Erc20_DAI.balanceOf(me).toNumber(), 18720, "My SA (DAI) balance is 380 higher after successful pay(), #9");
+assertEquals(Erc20_EUR.balanceOf(me).toNumber(), 18660, "My SA (EUR) balance is unchanged after successful pay(), #9");
+assertEquals(Erc20_DAI.balanceOf(contract.address).toNumber(), 1280, "DC Settlement (DAI) after pay, #9");
+assertEquals(Erc20_EUR.balanceOf(contract.address).toNumber(), 1340, "DC Settlement (EUR) after pay, #9");
