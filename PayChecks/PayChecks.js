@@ -35,7 +35,7 @@ console.log("Gas used: " + receipt.gasUsed);
 var receipt2 = get_transaction(contract.pay({from: other}));
 console.log("Gas used: " + receipt2.gasUsed);
 
-assert(receipt.gasUsed > receipt2.gasUsed, "pay() called second time should use less gas");
+assert(receipt.gasUsed > receipt2.gasUsed + 10000, "pay() called second time should use less gas");
 
 succ(do_mint(contract, 6), "mint more coins");
 
@@ -45,8 +45,8 @@ console.log("Gas used: " + receipt3.gasUsed);
 var receipt4 = get_transaction(contract.pay({from: other}));
 console.log("Gas used: " + receipt4.gasUsed);
 
-assert(receipt.gasUsed > receipt3.gasUsed, "pay() called third time should use less gas");
-assert(receipt.gasUsed > receipt4.gasUsed, "pay() called fourth time should use less gas");
+assert(receipt.gasUsed > receipt3.gasUsed + 10000, "pay() called third time should use less gas");
+assert(receipt.gasUsed > receipt4.gasUsed + 10000, "pay() called fourth time should use less gas");
 
 // TODO: Consider why exactly gas cost varies between call 2, 3 and 4.
 // TODO: Add tests that verify that pay() calculates amounts correctly. (Covers expression compiler.)
