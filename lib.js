@@ -24,6 +24,11 @@ function get_transaction(b_A){
   return rec;
 }
 
+function get_storage_at(contract, wordAddress){
+  var storageWord = web3.eth.getStorageAt(contract.address, wordAddress);
+  return storageWord;
+}
+
 function do_set(dataFeed, num) {
   try {
     get_transaction(dataFeed.set(0, num));
