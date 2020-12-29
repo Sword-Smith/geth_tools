@@ -12,6 +12,7 @@ set -e # Halt on error
 ./PayoutLessThanMaxFactor/run_PayoutLessThanMaxFactor.sh
 ./EnsurePt0PayoutNotBlocked1/run_EnsurePt0PayoutNotBlocked1.sh
 ./EnsurePt0PayoutNotBlocked2/run_EnsurePt0PayoutNotBlocked2.sh
+./EnsurePt0PayoutNotBlocked3/run_EnsurePt0PayoutNotBlocked3.sh
 ./TransferChecks/run_TransferChecks.sh
 ./BatchTransferChecks/run_BatchTransferChecks.sh
 ./BatchBalanceChecks/run_BatchBalanceChecks.sh
