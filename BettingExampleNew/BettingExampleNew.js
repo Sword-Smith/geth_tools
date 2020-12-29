@@ -5,6 +5,7 @@ var other = web3.eth.accounts[1];
 // Check state before activate
 var BettingAddress = BettingExampleNew_.address;
 var contract = BettingExampleNew_;
+log_big("BettingExampleNew_ test.");
 do_set(DataFeed0_, 1); // set branch determining observable to avoid risk of time not having run out when pay() is called
 
 // WIP listen to events

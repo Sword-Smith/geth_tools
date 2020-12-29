@@ -3,8 +3,8 @@ me = web3.eth.accounts[0];
 
 var contract_address = SafeDiv_.address;
 var contract = SafeDiv_;
+log_big("SafeDiv_ test.");
 
-log_big("Preparing for the safe division test.");
 succ(do_approve(1000, 3000000, contract_address));
 succ(do_activate(contract, 5), "activate(5)");
 assertEquals(contract.balanceOf(me, 1).toNumber(), 5, "PT1 balance is correct after activation");

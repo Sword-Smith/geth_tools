@@ -5,7 +5,7 @@ var contract = InputValidation_;
 var contract_address = contract.address;
 do_set(DataFeed0_, 1); // set branch determining observable to avoid risk of time not having run out when pay() is called
 
-log_big("Preparing for the InputValidation_ test.");
+log_big("InputValidation_ test.");
 do_approve(1000, 3000000, contract_address);
 do_set(DataFeed1_, 2);
 assertEquals(contract.balanceOf(me, 1).toNumber(), 0, "PT1 balance zero at init");

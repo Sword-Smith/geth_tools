@@ -2,7 +2,7 @@ web3.eth.defaultAccount = web3.eth.accounts[0];
 var me = web3.eth.accounts[0];
 var contract = SafeMul_;
 
-log_big("SafeMul");
+log_big("SafeMul_ test.");
 succ(do_approve(2000, 3000000, contract.address), "approve");
 succ(do_activate(contract, 40), "activate(40)");
 assertEquals(contract.balanceOf(me, 1).toNumber(), 40, "PT1 balance is 40 after succeeded activate()");
