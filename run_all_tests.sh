@@ -9,6 +9,7 @@ set -e # Halt on error
 ./BalanceChecks/run_BalanceChecks.sh
 ./MintChecks/run_MintChecks.sh
 ./MultipleSettlementAssets/run_MultipleSettlementAssets.sh
+./PayoutLessThanMaxFactor/run_PayoutLessThanMaxFactor.sh
 ./TransferChecks/run_TransferChecks.sh
 ./BatchTransferChecks/run_BatchTransferChecks.sh
 ./BatchBalanceChecks/run_BatchBalanceChecks.sh
