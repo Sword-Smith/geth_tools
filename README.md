@@ -34,7 +34,7 @@ You may need to run
 Now a fully configured geth instance should be running in DEV mode. This running instance
 will only mine when there are transactions and it runs its own, local blockchain.
 
-Solidity and Dagger contracts can now be deployed by running `compile_and_deploy.pl`
+Solidity and Sword contracts can now be deployed by running `compile_and_deploy.pl`
 
 # How to use it
 
@@ -61,7 +61,7 @@ contract is referred to as \<contract_name>\_\<tokenSymbol\> or
 user to interact with several contracts of the same type but with different
 symbols, such as token contracts or data feed contracts.
 
-## Precompiler for Solidity and Dagger
+## Precompiler for Solidity and Sword
 ./deploy_and_compile.pl contains a precompiler. This means that you when
 defining smart contracts can use keywords to access addresses of other smart
 contracts. The keyword "\_address\_my\_" will be substituted with your own
