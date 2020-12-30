@@ -3,8 +3,7 @@ me = web3.eth.accounts[0];
 
 var contract_address = SafeSub_.address;
 var contract = SafeSub_;
-
-log_big("SafeSub Test");
+log_big("SafeSub_ test.");
 
 // Approve, activate, and verify PT balances
 do_approve(1000, 3000000, contract_address);

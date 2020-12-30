@@ -1,5 +1,5 @@
 b:
-	cd ../Daggerc2.0 && stack install
+	cd ../Sword && stack install
 r:
 	./run_geth.pl
 t:
@@ -7,4 +7,4 @@ t:
 
 reset:
 	rm -rf my_address out/ .ethereum_testserver_data/
-	
+

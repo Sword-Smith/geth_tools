@@ -1,6 +1,7 @@
 function l(a){
   console.log(a);
 }
+
 function get_transaction(b_A){
   t0_A = web3.eth.getTransaction(b_A);
   while (t0_A.blockNumber === null) {
@@ -16,9 +17,18 @@ function get_transaction(b_A){
   // rec.status should be "0x1" for success and "0x0" for failure
   var statusCode = parseInt(rec.status);
   if (!statusCode) {
+    console.log(b_A + " was reverted");
     throw b_A + " was reverted";
   }
+
+  return rec;
 }
+
+function get_storage_at(contract, wordAddress){
+  var storageWord = web3.eth.getStorageAt(contract.address, wordAddress);
+  return storageWord;
+}
+
 function do_set(dataFeed, num) {
   try {
     get_transaction(dataFeed.set(0, num));
@@ -27,6 +37,22 @@ function do_set(dataFeed, num) {
 function get_balance(contract, address, index) {
   b_A = contract.balanceOf(address, index);
   return b_A;
+}
+function do_approve_on(approveAmount, erc20Contract, spenderAddress) {
+  try {
+    b_A = erc20Contract.approve(spenderAddress, approveAmount, {
+      from: me,
+      gas: 3000000
+    });
+    t0_A = web3.eth.getTransaction(b_A);
+    while (t0_A.blockNumber === null) {
+      t0_A = web3.eth.getTransaction(b_A);
+    }
+    erc20Contract.allowance.call(me, contract_address,
+      function(error, allowance) {
+        assertEquals(allowance, approveAmount, "Check allowance after correct approve call..");
+      });
+    } catch (error) {return RES.FAIL;} return RES.SUCC;
 }
 function do_approve(validApproveAmount, gas_amount, contract_address) {
   try {
@@ -58,7 +84,13 @@ function do_pay_a_bit(contract, contract_address) {
 
 function do_pay(contract) {
   try {
-    get_transaction(pay = contract.pay());
+    get_transaction(contract.pay());
+  } catch (error) {return RES.FAIL;} return RES.SUCC;
+}
+
+function do_pay_implicit(contract, caller) {
+  try {
+    get_transaction(contract.pay({from: caller, gas: 3000000}));
   } catch (error) {return RES.FAIL;} return RES.SUCC;
 }
 
@@ -140,6 +172,15 @@ function fail(call, reason){
 function succ(call, reason){ //xD
   assertEquals(call, RES.SUCC, reason);
 }
+
+function assert(condition, reason) {
+  if (condition) {
+    formatSuccess(reason);
+  } else {
+    formatError(condition, !condition, reason);
+  }
+}
+
 function assertEquals(actual, expected, reason) {
     if (actual !== expected) {
         formatError(actual, expected, reason);
@@ -167,6 +208,12 @@ function assertArrayEquals(actual, expected, reason) {
   }
 
   formatSuccess(reason);
+}
+
+function assertAddressEquals(actual, expected, reason) {
+  var avoidZeroPadding = new RegExp('^0x0*');
+  var actualNoPadding = actual.replace(avoidZeroPadding, '0x');
+  assertEquals(actualNoPadding, expected, reason);
 }
 
 function formatSuccess(reason) {
