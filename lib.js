@@ -90,7 +90,7 @@ function do_pay(contract) {
 
 function do_pay_implicit(contract, caller) {
   try {
-    get_transaction(contract.pay({from: caller, gas: 3000000}));
+    get_transaction(contract.pay({from: caller, gas: 8000000}));
   } catch (error) {return RES.FAIL;} return RES.SUCC;
 }
 
