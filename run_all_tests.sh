@@ -22,3 +22,4 @@ set -e # Halt on error
 ./PayChecks/run_PayChecks.sh
 ./EventChecks/run_EventChecks.sh
 ./DeepNestedContractMultiplePayouts/run_DeepNestedContractMultiplePayouts.sh
+./DeepNestedContractMultiplePayoutsMultipleAssets1/run_DeepNestedContractMultiplePayoutsMultipleAssets1.sh
