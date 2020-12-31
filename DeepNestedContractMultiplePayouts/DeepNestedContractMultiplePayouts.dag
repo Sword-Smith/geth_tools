@@ -1,0 +1,48 @@
+scale(2,2,
+  both(
+    if obs(bool, _address_DataFeed0_, 0) within seconds(7) then
+      if obs(bool, _address_DataFeed1_, 0) within seconds(7) then
+        if obs(bool, _address_DataFeed2_, 0) within seconds(7) then
+          if obs(bool, _address_DataFeed3_, 0) within seconds(7) then
+            if obs(bool, _address_DataFeed4_, 0) within seconds(7) then
+              if obs(bool, _address_DataFeed5_, 0) within seconds(7) then
+                if obs(bool, _address_DataFeed6_, 0) within seconds(7) then
+                  transfer(_address_Erc20_DAI, 1)
+                else
+                  transfer(_address_Erc20_DAI, 2)
+              else
+                transfer(_address_Erc20_DAI, 3)
+            else
+              transfer(_address_Erc20_DAI, 4)
+          else
+            transfer(_address_Erc20_DAI, 5)
+        else
+          transfer(_address_Erc20_DAI, 6)
+      else
+        transfer(_address_Erc20_DAI, 7)
+    else
+      transfer(_address_Erc20_DAI, 8),
+    if obs(bool, _address_DataFeed0_, 0) within seconds(7) then
+      if obs(bool, _address_DataFeed1_, 0) within seconds(7) then
+        if obs(bool, _address_DataFeed2_, 0) within seconds(7) then
+          if obs(bool, _address_DataFeed3_, 0) within seconds(7) then
+            if obs(bool, _address_DataFeed4_, 0) within seconds(7) then
+              if obs(bool, _address_DataFeed5_, 0) within seconds(7) then
+                if obs(bool, _address_DataFeed6_, 0) within seconds(7) then
+                  transfer(_address_Erc20_DAI, 9)
+                else
+                  transfer(_address_Erc20_DAI, 10)
+              else
+                transfer(_address_Erc20_DAI, 11)
+            else
+              transfer(_address_Erc20_DAI, 12)
+          else
+            transfer(_address_Erc20_DAI, 13)
+        else
+          transfer(_address_Erc20_DAI, 14)
+      else
+        transfer(_address_Erc20_DAI, 15)
+    else
+      transfer(_address_Erc20_DAI, 16)
+  )
+)

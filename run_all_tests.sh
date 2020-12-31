@@ -21,3 +21,4 @@ set -e # Halt on error
 ./BettingExampleNewScale/run_BettingExampleNewScale.sh
 ./PayChecks/run_PayChecks.sh
 ./EventChecks/run_EventChecks.sh
+./DeepNestedContractMultiplePayouts/run_DeepNestedContractMultiplePayouts.sh
