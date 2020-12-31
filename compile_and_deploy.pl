@@ -261,7 +261,7 @@ if ( $file_ext eq "sol" ){
 } elsif ( $file_ext ~~ [qw(sword bahr dag)] ){
     $compile_output = `swordc -d -o $outdir $precompiled_fn;`;
 } else {
-    die "This program only supports .sol, .dag, and .bahr file extensions";
+    die "This program only supports .sol, .sword, .dag, and .bahr file extensions";
 }
 print("Output from compilation was: " + $compile_output);
 
