@@ -5,6 +5,7 @@ set -e # Halt on error
 ./SafeSub/run_SafeSub.sh
 ./SafeMul/run_SafeMul.sh
 ./SafeDiv/run_SafeDiv.sh
+./ScientificNotation/run_ScientificNotation.sh
 ./ActivationChecks/run_ActivationChecks.sh
 ./BalanceChecks/run_BalanceChecks.sh
 ./MintChecks/run_MintChecks.sh

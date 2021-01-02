@@ -1,0 +1,6 @@
+scale(          1e18    , 1e18,
+    if obs(bool, _address_DataFeed0_, 0) within days(1e1) then
+        transfer(_address_Erc20_DAI, 1)
+    else
+        transfer(_address_Erc20_DAI, 2)
+)
