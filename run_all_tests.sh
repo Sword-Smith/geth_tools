@@ -23,3 +23,4 @@ set -e # Halt on error
 ./EventChecks/run_EventChecks.sh
 ./DeepNestedContractMultiplePayouts/run_DeepNestedContractMultiplePayouts.sh
 ./DeepNestedContractMultiplePayoutsMultipleAssets1/run_DeepNestedContractMultiplePayoutsMultipleAssets1.sh
+./DeepNestedContractMultiplePayoutsMultipleAssets2/run_DeepNestedContractMultiplePayoutsMultipleAssets2.sh
