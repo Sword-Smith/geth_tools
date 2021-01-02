@@ -1,0 +1,60 @@
+scale(2,2,
+  both(
+    if obs(bool, _address_DataFeed0_, 0) within seconds(7) then
+      if obs(bool, _address_DataFeed1_, 0) within seconds(7) then
+        if obs(bool, _address_DataFeed2_, 0) within seconds(7) then
+          if obs(bool, _address_DataFeed3_, 0) within seconds(7) then
+            if obs(bool, _address_DataFeed4_, 0) within seconds(7) then
+              if obs(bool, _address_DataFeed5_, 0) within seconds(7) then
+                if obs(bool, _address_DataFeed6_, 0) within seconds(7) then
+                  transfer(_address_Erc20_DAI, 1)
+                else
+                  transfer(_address_Erc20_GOLEM, 2)
+              else
+                transfer(_address_Erc20_AGI, 3)
+            else
+              if obs(bool, _address_DataFeed7_, 0) within seconds(7) then
+                transfer(_address_Erc20_LINK, 4)
+              else
+                if obs(bool, _address_DataFeed8_, 0) within seconds(7) then
+                  transfer(_address_Erc20_YFI, 5)
+                else
+                  transfer(_address_Erc20_COMP, 6)
+          else
+            transfer(_address_Erc20_WBTC, 7)
+        else
+          transfer(_address_Erc20_REV, 8)
+      else
+        transfer(_address_Erc20_HT, 9)
+    else
+      transfer(_address_Erc20_SNX, 10),
+    if obs(bool, _address_DataFeed0_, 0) within seconds(7) then
+      if obs(bool, _address_DataFeed1_, 0) within seconds(7) then
+        if obs(bool, _address_DataFeed2_, 0) within seconds(7) then
+          if obs(bool, _address_DataFeed3_, 0) within seconds(7) then
+            if obs(bool, _address_DataFeed4_, 0) within seconds(7) then
+              if obs(bool, _address_DataFeed5_, 0) within seconds(7) then
+                if obs(bool, _address_DataFeed6_, 0) within seconds(7) then
+                  transfer(_address_Erc20_DAI, 11)
+                else
+                  transfer(_address_Erc20_GOLEM, 12)
+              else
+                transfer(_address_Erc20_AGI, 13)
+            else
+              transfer(_address_Erc20_SNX, 14)
+          else
+            transfer(_address_Erc20_WBTC, 15)
+        else
+          transfer(_address_Erc20_REV, 16)
+      else
+        transfer(_address_Erc20_HT, 17)
+    else
+      if obs(bool, _address_DataFeed7_, 0) within seconds(7) then
+        transfer(_address_Erc20_LINK, 18)
+      else
+        if obs(bool, _address_DataFeed8_, 0) within seconds(7) then
+          transfer(_address_Erc20_YFI, 19)
+        else
+          transfer(_address_Erc20_COMP, 20)
+  )
+)
