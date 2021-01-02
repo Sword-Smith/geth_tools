@@ -17,9 +17,9 @@ do_approve_on(188, Erc20_HT, contract.address);
 do_approve_on(188, Erc20_SNX, contract.address);
 do_approve_on(188, Erc20_YFI, contract.address);
 do_approve_on(188, Erc20_COMP, contract.address);
-var assets = [Erc20_DAI, Erc20_GOLEM, Erc20_AGI, Erc20_LINK, Erc20_WBTC, Erc20_REV, Erc20_HT, Erc20_SNX, Erc20_COMP];
+var assets = [Erc20_DAI, Erc20_GOLEM, Erc20_AGI, Erc20_LINK, Erc20_WBTC, Erc20_REV, Erc20_HT, Erc20_SNX, Erc20_COMP, Erc20_YFI];
 var assetsReceivedByMe = [Erc20_SNX, Erc20_YFI];
-var assetsReceivedByOther = [Erc20_DAI, Erc20_GOLEM, Erc20_AGI, Erc20_WBTC, Erc20_REV, Erc20_HT, Erc20_LINK];
+var assetsReceivedByOther = [Erc20_DAI, Erc20_GOLEM, Erc20_AGI, Erc20_LINK, Erc20_WBTC, Erc20_REV, Erc20_HT, Erc20_COMP];
 var assetsReceivedByThird = [];
 
 // Ensure that PT5 and PT14 (a and a YFI/SNX payout) are in the money of the associated sword contract
@@ -47,17 +47,18 @@ for (var i = 0; i <= 18; i++) {
     assertEquals(contract.balanceOf(me, i).toNumber(), 47, "PartyToken " + i.toString() + " should have balance 47 after activation");
 }
 for (var j = 0; j < assets.length; j++) {
-    console.log(j);
     assertEquals(assets[j].balanceOf(me).toNumber(), 19812, "Settlement asset should have balance 19812 after activation");
     assertEquals(assets[j].balanceOf(contract.address).toNumber(), 188, "DC Settlement asset balance be 188 after activation");
 }
 
 // transfer away all but the PT5 and PT14 tokens
-for (var i = 0; i <= 18; i++) {
+for (var i = 1; i <= 18; i++) {
     if (i != 5 && i != 14) {
-        succ(do_transfer(contract, me, other, i, 47), "Allow me to transfer away 47 PT" + i.toString() + "s, #1");
+        succ(do_transfer(contract, me, third, i, 47), "Allow me to transfer away 47 PT" + i.toString() + "s, #1");
     }
 }
+succ(do_transfer(contract, me, other, 0, 47), "Allow me to transfer away 47 PT0");
+
 for (var i = 0; i <= 18; i++) {
     var expectedBalance = i === 5 || i ===14 ? 47 : 0;
     assertEquals(contract.balanceOf(me, i).toNumber(), expectedBalance, "PartyToken " + i.toString() + " should have balance " + expectedBalance + " after activation");
@@ -78,7 +79,7 @@ for (var i = 0; i <= 18; i++) {
 }
 for (var j = 0; j < assetsReceivedByMe.length; j++) {
     assertEquals(assetsReceivedByMe[j].balanceOf(me).toNumber(), 19906, "Settlement asset received by me should be 20000 after pay");
-    assertEquals(assetsReceivedByMe[j].balanceOf(contract.address).toNumber(), 94, "DC Settlement asset received by me should be 0 after pay");
+    assertEquals(assetsReceivedByMe[j].balanceOf(contract.address).toNumber(), 94, "DC Settlement asset received by me should be 94 after pay");
 }
 for (var j = 0; j < assetsReceivedByOther.length; j++) {
     assertEquals(assetsReceivedByOther[j].balanceOf(other).toNumber(), 0, "other should not have settlement asset before call to pay");
@@ -86,7 +87,7 @@ for (var j = 0; j < assetsReceivedByOther.length; j++) {
 }
 
 for (var i = 0; i <= 18; i++) {
-    var expectedBalance = i === 5 || i === 14 ? 0 : 47;
+    var expectedBalance = i === 0 ? 47 : 0;
     assertEquals(contract.balanceOf(other, i).toNumber(), expectedBalance, "other's partyToken " + i.toString() + " should have balance " + expectedBalance + " after 2nd pay");
 }
 succ(do_pay_implicit(contract, other), "Other can execute pay, #3");
