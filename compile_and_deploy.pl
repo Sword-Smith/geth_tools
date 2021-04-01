@@ -347,7 +347,7 @@ console.log('$filter_out_string Transaction included in block ' + t.blockNumber 
 var rcpt = eth.getTransactionReceipt(submittedContract.transactionHash);
 if (rcpt.contractAddress && web3.eth.getCode(rcpt.contractAddress) != '0x'){
     console.log('$filter_out_string Contract created on address:');
-    console.log(rcpt.contractAddress);
+    console.log(web3.toChecksumAddress(rcpt.contractAddress));
     console.log('$filter_out_string Gas used: ' + rcpt.gasUsed);
 } else {
     console.log('Contract address not found. Something went wrong. Perhaps too little gas?');
@@ -374,7 +374,7 @@ say "output from Geth execution:\n$geth_output";
 my $contract_address;
 my @lines = split /\n/, $geth_output;
 for my $line (@lines) {
-    $contract_address = $line if $line =~ /^0x[0-9a-f]{40}$/;
+    $contract_address = $line if $line =~ /^0x[0-9a-fA-F]{40}$/;
     last if $contract_address;
 }
 die "No contract address found in output. Something went wrong" unless $contract_address;
